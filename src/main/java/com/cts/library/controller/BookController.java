@@ -3,6 +3,7 @@ package com.cts.library.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,21 +31,25 @@ public class BookController {
 		return bookService.getAllBooks();
 	}
 	
-	@GetMapping("/books/{id}")
+	@GetMapping("/books/{id}") 
 	public Book getBook(@PathVariable Long id) {
 		return bookService.getBookById(id);
 	}
 	
-	@GetMapping("/books/title")
+	@GetMapping("/search/title")
 	public List<Book> searchTitle(@RequestParam String title) {
 		return bookService.searchByTitle(title);
 	}
-	@GetMapping("/books/genre")
+	@GetMapping("/search/genre")
 	public List<Book> searchGenre(@RequestParam String genre) {
 		return bookService.searchByGenre(genre);
 	}
-	@GetMapping("/books/author")
+	@GetMapping("/search/author")
 	public List<Book> getBookName(@RequestParam String author) {
 		return bookService.searchByAuthor(author);
+	}
+	@DeleteMapping("/{id}")
+	public void deleteBook(@PathVariable Long id) {
+		bookService.deleteBook(id);
 	}
 }

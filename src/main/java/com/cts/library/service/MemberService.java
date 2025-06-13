@@ -33,10 +33,7 @@ public class MemberService {
 		return memberRepo.save(member);
 	}
 	
-	public List<Member> getAllMembers(Member requestingUser){
-		if(requestingUser.getRole() != Role.ADMIN) {
-			throw new AccessDeniedException("Only Admins can view the members");
-		}
+	public List<Member> getAllMembers(){
 		return memberRepo.findAll();
 	}
 	
@@ -44,11 +41,8 @@ public class MemberService {
 		return memberRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Book not Found" + id));
 	}
 	
-	public void deleteMemberById(long id, Member requestingUser) {
-		if(requestingUser.getRole() != Role.ADMIN) {
-			throw new AccessDeniedException("Only Admins can delete the members");
-		}
-		Member member = getMemberById(id);
-		memberRepo.delete(member);
+	public void deleteMemberById(long id) {
+		Member exist = getMemberById(id);
+		memberRepo.delete(exist);
 	}
 }

@@ -1,48 +1,14 @@
 package com.cts.library.service;
 
-
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.cts.library.model.Member;
-import com.cts.library.model.Role;
-import com.cts.library.repository.MemberRepo;
 
-import jakarta.persistence.EntityNotFoundException;
-
-
-@Service
-public class MemberService {
+public interface MemberService {
+		
+	public Member registerMember(Member member);
+	public List<Member> getAllMembers();
+	public Member getMemberById(long id);
+	public void deleteMemberById(long id);
 	
-	
-	@Autowired
-	private MemberRepo memberRepo;
-	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	
-	public Member registerMember(Member member) {
-		if (memberRepo.existsByUsername(member.getUsername())) {
-			throw new RuntimeException("Username already taken");
-		}
-		member.setPassword(passwordEncoder.encode(member.getPassword()));
-		return memberRepo.save(member);
-	}
-	
-	public List<Member> getAllMembers(){
-		return memberRepo.findAll();
-	}
-	
-	public Member getMemberById(long id) {
-		return memberRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Book not Found" + id));
-	}
-	
-	public void deleteMemberById(long id) {
-		Member exist = getMemberById(id);
-		memberRepo.delete(exist);
-	}
 }

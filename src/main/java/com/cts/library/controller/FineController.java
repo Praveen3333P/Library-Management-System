@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cts.library.model.Fine;
 import com.cts.library.service.FineService;
+import com.cts.library.service.FineServiceImpl;
 
 @RestController
 public class FineController {

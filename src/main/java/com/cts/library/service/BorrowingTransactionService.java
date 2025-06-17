@@ -1,19 +1,7 @@
 package com.cts.library.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.cts.library.model.BorrowingTransaction;
-import com.cts.library.repository.BorrowingTransactionRepo;
 
-
-@Service
-public class BorrowingTransactionService {
-	
-	@Autowired
-	private BorrowingTransactionRepo borrowingTransactionRepo;
-	
-	public BorrowingTransaction saveBorrowingTransaction(BorrowingTransaction borrowingTransaction) {
-		return borrowingTransactionRepo.save(borrowingTransaction);
-	}
+public interface BorrowingTransactionService {
+	public BorrowingTransaction saveBorrowingTransaction(BorrowingTransaction borrowingTransaction);
 }

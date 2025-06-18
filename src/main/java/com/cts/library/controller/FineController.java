@@ -1,22 +1,26 @@
 package com.cts.library.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.cts.library.model.Fine;
 import com.cts.library.service.FineService;
-import com.cts.library.service.FineServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
+@RequestMapping("/fine")
 public class FineController {
-	
-	@Autowired
-	private FineService fineService;
-	
-	@PostMapping("/create/fine")
-	public Fine createFine(Fine fine) {
-		return fineService.saveFineDetails(fine);
-	}
 
+    @Autowired
+    private FineService fineService;
+
+    @GetMapping("/member/{memberId}")
+    public List<Fine> getFinesByMember(@PathVariable Long memberId) {
+        return fineService.getFinesByMemberId(memberId);
+    }
+
+    @PutMapping("/{fineId}/pay")
+    public Fine payFine(@PathVariable Long fineId) {
+        return fineService.payFine(fineId);
+    }
 }

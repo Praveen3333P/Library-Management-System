@@ -1,5 +1,7 @@
 package com.cts.library.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,19 +22,27 @@ public class Member {
 	private String email;
 	private String phone;
 	private String address;
-	private String membershipStatus;
 	
 	private String username;
 	private String password;
+	private LocalDate membershipExpiryDate;
+	
+	@Enumerated(EnumType.STRING)
+	private MembershipStatus membershipStatus = MembershipStatus.BASIC;
 	
 	@Enumerated(EnumType.STRING)
 	private Role role;
-
+	
+	public boolean isMembershipActive() {
+        return membershipExpiryDate != null && LocalDate.now().isBefore(membershipExpiryDate);
+    }
+	
 	public Member() {
-		super();
+		// by default we are setting the role to member
+		this.role = Role.MEMBER;
 	}
 
-	public Member(long memberId, String name, String email, String phone, String address, String membershipStatus,
+	public Member(long memberId, String name, String email, String phone, String address, MembershipStatus membershipStatus,
 			String username, String password, Role role) {
 		super();
 		this.memberId = memberId;
@@ -86,12 +96,25 @@ public class Member {
 		this.address = address;
 	}
 
-	public String getMembershipStatus() {
-		return membershipStatus;
+	public MembershipStatus getMembershipStatus() {
+	    if (membershipExpiryDate == null || LocalDate.now().isAfter(membershipExpiryDate)) {
+	        return MembershipStatus.EXPIRED;
+	    }
+	    return membershipStatus;
+	}
+	
+	public void setMembershipStatus(MembershipStatus status) {
+	    if (this.membershipStatus != MembershipStatus.PRIME || status == MembershipStatus.EXPIRED) {
+	        this.membershipStatus = status;
+	    }
 	}
 
-	public void setMembershipStatus(String membershipStatus) {
-		this.membershipStatus = membershipStatus;
+	public LocalDate getMembershipExpiryDate() {
+		return membershipExpiryDate;
+	}
+
+	public void setMembershipExpiryDate(LocalDate membershipExpiryDate) {
+		this.membershipExpiryDate = membershipExpiryDate;
 	}
 
 	public String getUsername() {
@@ -115,7 +138,11 @@ public class Member {
 	}
 
 	public void setRole(Role role) {
-		this.role = role;
+		
+		// we are making sure member is not changing into admin
+		if (this.role != Role.ADMIN) {
+            this.role = role;
+        }
 	}
 	
 	

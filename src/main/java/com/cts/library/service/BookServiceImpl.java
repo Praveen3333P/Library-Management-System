@@ -10,7 +10,7 @@ import com.cts.library.repository.BookRepo;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class BookServiceImpl {
+public class BookServiceImpl implements BookService{
 
 	
 	@Autowired
@@ -19,6 +19,25 @@ public class BookServiceImpl {
 	public Book addBook(Book book) {
 		return bookRepo.save(book);
 	}
+	
+	public void deleteBook(Long id) {
+		Book exist = getBookById(id);
+		bookRepo.delete(exist);
+	}
+	
+	public String updateBook(Long id, Book updated) {
+		Book exist = getBookById(id);
+		exist.setBookId(updated.getBookId());
+		exist.setBookName(updated.getBookName());
+		exist.setGenre(updated.getGenre());
+		exist.setISBN(updated.getISBN());
+		exist.setAuthor(updated.getAuthor());
+		exist.setAvailableCopies(updated.getAvailableCopies());
+		exist.setYearPublished(updated.getYearPublished());
+		
+		return "Book Updated Succefully";
+	}
+	
 	
 	public List<Book> getAllBooks(){
 		return bookRepo.findAll();
@@ -40,10 +59,7 @@ public class BookServiceImpl {
 		return bookRepo.findByBookAuthorContainingIgnoreCase(author);
 	}
 	
-	public void deleteBook(Long id) {
-		Book exist = getBookById(id);
-		bookRepo.delete(exist);
-	}
+	
 	
 	
 	

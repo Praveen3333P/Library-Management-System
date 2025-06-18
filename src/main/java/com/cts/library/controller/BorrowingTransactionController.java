@@ -16,27 +16,18 @@ public class BorrowingTransactionController {
     @Autowired
     private BorrowingTransactionService transactionService;
 
-    @PostMapping("/borrow")
+    @PostMapping("/borrow/{memberId}/{bookId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BorrowingTransaction> borrowBook(@RequestBody BorrowingTransaction transaction) {
-        transaction.setStatus(BorrowingTransaction.Status.BORROWED);
-        BorrowingTransaction savedTransaction = transactionService.saveBorrowingTransaction(transaction);
-        return ResponseEntity.ok(savedTransaction);
+    public ResponseEntity<BorrowingTransaction> borrowBook(
+            @PathVariable Long memberId,
+            @PathVariable Long bookId) {
+        return ResponseEntity.ok(transactionService.borrowBook(memberId, bookId));
     }
 
-    @PostMapping("/return/{id}")
+    @PostMapping("/return/{transactionId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BorrowingTransaction> returnBook(@PathVariable Long id) {
-        List<BorrowingTransaction> all = transactionService.getAllTransactions();
-        for (BorrowingTransaction tx : all) {
-            if (tx.getTransactionId().equals(id)) {
-                tx.setStatus(BorrowingTransaction.Status.RETURNED);
-                tx.setReturnDate(java.time.LocalDate.now());
-                BorrowingTransaction updated = transactionService.saveBorrowingTransaction(tx);
-                return ResponseEntity.ok(updated);
-            }
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<BorrowingTransaction> returnBook(@PathVariable Long transactionId) {
+        return ResponseEntity.ok(transactionService.returnBook(transactionId));
     }
 
     @GetMapping("/member/{memberId}")
@@ -45,7 +36,7 @@ public class BorrowingTransactionController {
         return ResponseEntity.ok(transactionService.getTransactionsByMember(memberId));
     }
 
-    @GetMapping("/alltransactions")
+    @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BorrowingTransaction>> getAll() {
         return ResponseEntity.ok(transactionService.getAllTransactions());

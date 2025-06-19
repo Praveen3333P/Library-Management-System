@@ -91,7 +91,4 @@ public class Book {
 	public boolean isAvailable() {
 	    return availableCopies > 0;
 	}
-
-	
-	
 }

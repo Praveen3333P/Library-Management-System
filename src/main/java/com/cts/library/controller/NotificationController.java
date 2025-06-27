@@ -12,11 +12,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/notifications")
 public class NotificationController {
-
-    @Autowired
+	
     private NotificationService notificationService;
 
-    @PostMapping
+    public NotificationController(NotificationService notificationService) {
+		super();
+		this.notificationService = notificationService;
+	}
+
+	@PostMapping
     public Notification createNotification(@RequestBody Notification notification) {
         return notificationService.createNotification(notification);
     }

@@ -1,6 +1,5 @@
 package com.cts.library.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -13,9 +12,13 @@ import jakarta.persistence.EntityNotFoundException;
 public class BookServiceImpl implements BookService{
 
 	
-	@Autowired
 	private BookRepo bookRepo;
 	
+	public BookServiceImpl(BookRepo bookRepo) {
+		super();
+		this.bookRepo = bookRepo;
+	}
+
 	public Book addBook(Book book) {
 		return bookRepo.save(book);
 	}
@@ -52,11 +55,11 @@ public class BookServiceImpl implements BookService{
 	}
 	
 	public List<Book> searchByGenre(String genre){
-		return bookRepo.findByBookGenreIgnoreCase(genre);
+		return bookRepo.findByGenreIgnoreCase(genre);
 	}
 	
 	public List<Book> searchByAuthor(String author){
-		return bookRepo.findByBookAuthorContainingIgnoreCase(author);
+		return bookRepo.findByAuthorContainingIgnoreCase(author);
 	}
 	
 	

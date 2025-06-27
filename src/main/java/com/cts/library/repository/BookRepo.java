@@ -11,7 +11,7 @@ import com.cts.library.model.Book;
 public interface BookRepo extends JpaRepository<Book, Long>{
 	
 	List<Book> findByBookNameContainingIgnoreCase(String title);
-	List<Book> findByBookGenreIgnoreCase(String Genre);
-	List<Book> findByBookAuthorContainingIgnoreCase(String author);
+	List<Book> findByGenreIgnoreCase(String Genre);
+	List<Book> findByAuthorContainingIgnoreCase(String author);
 	
 }

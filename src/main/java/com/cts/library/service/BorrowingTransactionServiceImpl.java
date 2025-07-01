@@ -5,81 +5,82 @@ import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.model.Member;
 import com.cts.library.repository.BookRepo;
 import com.cts.library.repository.BorrowingTransactionRepo;
+import com.cts.library.repository.MemberRepo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BorrowingTransactionServiceImpl implements BorrowingTransactionService {
 
-    private BorrowingTransactionRepo borrowingTransactionRepo;
+    @Autowired
+    private BorrowingTransactionRepo transactionRepo;
 
+    @Autowired
     private BookRepo bookRepo;
 
-    private MemberService memberService;
-
-   
-    private BookService bookService;
-
-    public BorrowingTransactionServiceImpl(BorrowingTransactionRepo borrowingTransactionRepo, BookRepo bookRepo,
-			MemberService memberService, BookService bookService) {
-		super();
-		this.borrowingTransactionRepo = borrowingTransactionRepo;
-		this.bookRepo = bookRepo;
-		this.memberService = memberService;
-		this.bookService = bookService;
-	}
+    @Autowired
+    private MemberRepo memberRepo;
 
     @Override
-    public BorrowingTransaction borrowBook(Long memberId, Long bookId) {
-        Member member = memberService.getMemberById(memberId);
-        Book book = bookService.getBookById(bookId);
+    public String borrowBook(Long bookId, Long memberId) {
+        Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
+        Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
 
         if (book.getAvailableCopies() <= 0) {
-            throw new RuntimeException("Book is currently unavailable.");
+            return "No copies available for borrowing.";
         }
+        
+        if (member.getBorrowingLimit() <= 0) {
+            return "Borrowing limit reached. Cannot borrow more books.";
+        }
+        
+        
+        BorrowingTransaction txn = new BorrowingTransaction();
+        txn.setBook(book);
+        txn.setMember(member);
+        txn.setBorrowDate(LocalDate.now());
+        txn.setReturnDate(LocalDate.now().plusDays(10));
+        txn.setStatus(BorrowingTransaction.Status.BORROWED);
 
+        transactionRepo.save(txn);
+        
         book.setAvailableCopies(book.getAvailableCopies() - 1);
         bookRepo.save(book);
 
-        BorrowingTransaction transaction = new BorrowingTransaction();
-        transaction.setBook(book);
-        transaction.setMember(member);
-        transaction.setBorrowDate(LocalDate.now());
-        transaction.setReturnDate(null);
-        transaction.setStatus(BorrowingTransaction.Status.BORROWED);
-
-        return borrowingTransactionRepo.save(transaction);
+        member.setBorrowingLimit(member.getBorrowingLimit() - 1);
+        memberRepo.save(member);
+        
+        return "Book borrowed successfully.";
     }
 
     @Override
-    public BorrowingTransaction returnBook(Long transactionId) {
-        BorrowingTransaction transaction = borrowingTransactionRepo.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+    public String returnBook(Long bookId, Long memberId) {
+        Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
+        Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
 
-        if (transaction.getStatus() == BorrowingTransaction.Status.RETURNED) {
-            throw new RuntimeException("Book already returned.");
-        }
+        Optional<BorrowingTransaction> optTxn = transactionRepo.findByMemberId(member.getMemberId()).stream()
+            .filter(txn -> txn.getBook().equals(book) && txn.getStatus() == BorrowingTransaction.Status.BORROWED)
+            .findFirst();
 
-        Book book = transaction.getBook();
+        if (!optTxn.isPresent()) return "No borrowed transaction found.";
+
+        BorrowingTransaction txn = optTxn.get();
+        txn.setReturnDate(LocalDate.now());
+        txn.setStatus(BorrowingTransaction.Status.RETURNED);
+        transactionRepo.save(txn);
+        
         book.setAvailableCopies(book.getAvailableCopies() + 1);
         bookRepo.save(book);
 
-        transaction.setReturnDate(LocalDate.now());
-        transaction.setStatus(BorrowingTransaction.Status.RETURNED);
-
-        return borrowingTransactionRepo.save(transaction);
-    }
-   @Override
-    public List<BorrowingTransaction> getTransactionsByMember(Long memberId) {
-        return borrowingTransactionRepo.findByMember_MemberId(memberId);
-    }
-
-    @Override
-    public List<BorrowingTransaction> getAllTransactions() {
-        return borrowingTransactionRepo.findAll();
+        member.setBorrowingLimit(member.getBorrowingLimit() + 1);
+        memberRepo.save(member);
+        
+        return "Book returned successfully.";
     }
 }
 	

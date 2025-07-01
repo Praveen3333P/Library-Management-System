@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.cts.library.model.Member;
@@ -18,16 +18,20 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class MemberServiceImpl implements MemberService{
 	
-	
-	@Autowired
 	private MemberRepo memberRepo;
 	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+
+//	private PasswordEncoder passwordEncoder;
 	
+	public MemberServiceImpl(MemberRepo memberRepo) {
+		super();
+		this.memberRepo = memberRepo;
+	}
+
 	public Member createAdmin(Member adminMember) {
         adminMember.setRole(Role.ADMIN);
-        adminMember.setPassword(passwordEncoder.encode(adminMember.getPassword()));
+        adminMember.setPassword(adminMember.getPassword());
+//        adminMember.setPassword(passwordEncoder.encode(adminMember.getPassword()));
         return memberRepo.save(adminMember);
     }
 
@@ -36,7 +40,9 @@ public class MemberServiceImpl implements MemberService{
 			throw new RuntimeException("Username already taken");
 		}
 		member.setRole(Role.MEMBER);
-		member.setPassword(passwordEncoder.encode(member.getPassword()));
+        member.setPassword(member.getPassword());
+
+//		member.setPassword(passwordEncoder.encode(member.getPassword()));
 		return memberRepo.save(member);
 	}
 	

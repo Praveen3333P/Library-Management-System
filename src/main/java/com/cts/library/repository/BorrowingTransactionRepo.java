@@ -1,15 +1,13 @@
 package com.cts.library.repository;
 
-import java.util.List;
-
+import com.cts.library.model.BorrowingTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.cts.library.model.BorrowingTransaction;
+import java.util.List;
 
 @Repository
-public interface BorrowingTransactionRepo extends JpaRepository<BorrowingTransaction, Long>{
-	List<BorrowingTransaction> findByMemberId(Long memberId);
-    List<BorrowingTransaction> findByBookId(Long bookId);
-    List<BorrowingTransaction> findByStatus(String status);
+public interface BorrowingTransactionRepo extends JpaRepository<BorrowingTransaction, Long> {
+    List<BorrowingTransaction> findByMember_MemberId(Long memberId);
+    List<BorrowingTransaction> findByBook_BookId(Long bookId);
 }

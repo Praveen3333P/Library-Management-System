@@ -16,7 +16,8 @@ public class FineServiceImpl implements FineService {
     @Autowired
     private FineRepo fineRepo;
 
-    private static final double DAILY_FINE_RATE = 20.0;
+
+	private static final double DAILY_FINE_RATE = 20.0;
 
     @Override
     public List<Fine> getFinesByMemberId(Long memberId) {

@@ -88,5 +88,7 @@ public class Book {
 		this.availableCopies = availableCopies;
 	}
 	
-	
+	public boolean isAvailable() {
+	    return availableCopies > 0;
+	}
 }

@@ -11,10 +11,15 @@ import java.util.List;
 @RequestMapping("/fine")
 public class FineController {
 
-    @Autowired
     private FineService fineService;
 
-    @GetMapping("/member/{memberId}")
+
+	public FineController(FineService fineService) {
+		super();
+		this.fineService = fineService;
+	}
+
+	@GetMapping("/member/{memberId}")
     public List<Fine> getFinesByMember(@PathVariable Long memberId) {
         return fineService.getFinesByMemberId(memberId);
     }

@@ -21,9 +21,14 @@ import com.cts.library.service.BookService;
 @Validated
 public class BookController {
 	
-	@Autowired
-	private BookService bookService;
 	
+	private BookService bookService;
+
+	public BookController(BookService bookService) {
+		super();
+		this.bookService = bookService;
+	}
+
 	@PostMapping("/books/add")
 	public Book addBook(@RequestBody Book book) {
 		return bookService.addBook(book);

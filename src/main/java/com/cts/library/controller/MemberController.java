@@ -1,76 +1,82 @@
 package com.cts.library.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.cts.library.model.LoginDetails;
 import com.cts.library.model.Member;
 import com.cts.library.service.MemberService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class MemberController {
-	
-	private MemberService memberService;
-	
-	public MemberController(MemberService memberService) {
-		super();
-		this.memberService = memberService;
-	}
 
-	@PostMapping("/register/member")
-	public Member registeringMember(@RequestBody Member member) {
-		return memberService.registerMember(member);
-	}
-	
-	@GetMapping("/allmembers")
-//	@PreAuthorize("hasRole('ADMIN')")
-	public List<Member> getAllMember(){
-		return memberService.getAllMembers();
-	}
-	
-	@PostMapping("/register/admin")
-//    @PreAuthorize("hasRole('ADMIN')") // we are making sure that only admins can create other admins
-    public Member createAdmin(@RequestBody Member member) {
-        return memberService.createAdmin(member);
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
     }
-	
-	@DeleteMapping("/member/{id}")
-//	@PreAuthorize("hasRole('ADMIN')") // we are giving admin access to delete 
-	public void deleteMember(@PathVariable Long id) {
-		memberService.deleteMemberById(id);
-	}
-	
-	@PutMapping("/member/{id}")
-//	@PreAuthorize("hasRole('MEMBER')")
-	public Member updateMember(@PathVariable Long id,@RequestBody Member member) {
-		return memberService.updateMember(id,member);
-	}
-	
-	@GetMapping("/member/{id}")
-	public Member getMemberProfile(@PathVariable Long id) {
-	    Member member = memberService.getMemberById(id);
-	    
-	    // Automatically update membership status before returning profile
-	    memberService.updateMembershipStatus(member);
 
-	    return member;
-	}
+    @PostMapping("/admin/admin-register")
+    public ResponseEntity<String> createAdmin(@RequestBody Member admin
+                                              ) {
+//        memberService.validateAdmin(requesterId);
+        return ResponseEntity.ok(memberService.createAdmin(admin));
+    }
+    @GetMapping("/admin/allmembers")
+    public ResponseEntity<List<Member>> getAllMembers(@RequestParam Long requesterId) {
+        memberService.validateAdmin(requesterId);
+        return ResponseEntity.ok(memberService.getAllMembers());
+    }
 
-	
-	@PutMapping("/member/{id}/activate")
-//	@PreAuthorize("hasRole('MEMBER')")
-	public Member activateMembership(@PathVariable Long id, @RequestParam int months) {
-	    return memberService.activateMembership(id, months);
-	}
+    @GetMapping("/admin/get-member/{id}")
+    public ResponseEntity<Member> getMemberById(@PathVariable Long id,
+                                                @RequestParam Long requesterId) {
+        memberService.validateAdmin(requesterId);
+        Member member = memberService.getMemberById(id);
+        return ResponseEntity.ok(member);
+    }
+    
+    @PostMapping("/login")
+    public ResponseEntity<Member> loginMember(@RequestBody LoginDetails loginDetails) {
+    	memberService.loginMember(loginDetails);
+        return ResponseEntity.ok(memberService.loginMember(loginDetails));
+    }
 
-	
+    @PostMapping("/member/register")
+    public ResponseEntity<String> registerMember(@RequestBody Member member) {
+        return ResponseEntity.ok(memberService.registerMember(member));
+    }
+
+    @GetMapping("/member/{id}/profile")
+    public ResponseEntity<Member> getMemberProfile(@PathVariable Long id,
+                                                   @RequestParam Long requesterId) {
+        memberService.validateSameUser(requesterId, id);
+        Member member = memberService.getMemberById(id);
+        memberService.updateMembershipStatus(member);
+        return ResponseEntity.ok(member);
+    }
+
+    @PutMapping("/member/{id}/update")
+    public ResponseEntity<String> updateMember(@PathVariable Long id,
+                                               @RequestBody Member member,
+                                               @RequestParam Long requesterId) {
+        memberService.validateSameUser(requesterId, id);
+        return ResponseEntity.ok(memberService.updateMember(id, member));
+    }
+
+    @DeleteMapping("/member/{id}/delete")
+    public ResponseEntity<String> deleteMember(@PathVariable Long id,
+                                               @RequestParam Long requesterId) {
+        memberService.validateAdmin(requesterId);
+        return ResponseEntity.ok(memberService.deleteMemberById(id));
+    }
+
+    @PutMapping("/member/{id}/activate")
+    public ResponseEntity<String> activateMembership(@PathVariable Long id,
+                                                     @RequestParam int months,
+                                                     @RequestParam Long requesterId) {
+        memberService.validateSameUser(requesterId, id);
+        return ResponseEntity.ok(memberService.activateMembership(id, months));
+    }
 }

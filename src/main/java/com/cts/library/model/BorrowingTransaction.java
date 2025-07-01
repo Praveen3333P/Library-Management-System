@@ -2,6 +2,9 @@ package com.cts.library.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class BorrowingTransaction {
 
@@ -15,6 +18,7 @@ public class BorrowingTransaction {
 
     @ManyToOne
     @JoinColumn(name = "memberId", nullable = false)
+    @JsonBackReference
     private Member member;
 
     private LocalDate borrowDate;

@@ -14,17 +14,23 @@ import java.util.List;
 @Service
 public class BorrowingTransactionServiceImpl implements BorrowingTransactionService {
 
-    @Autowired
     private BorrowingTransactionRepo borrowingTransactionRepo;
 
-    @Autowired
     private BookRepo bookRepo;
 
-    @Autowired
     private MemberService memberService;
 
-    @Autowired
+   
     private BookService bookService;
+
+    public BorrowingTransactionServiceImpl(BorrowingTransactionRepo borrowingTransactionRepo, BookRepo bookRepo,
+			MemberService memberService, BookService bookService) {
+		super();
+		this.borrowingTransactionRepo = borrowingTransactionRepo;
+		this.bookRepo = bookRepo;
+		this.memberService = memberService;
+		this.bookService = bookService;
+	}
 
     @Override
     public BorrowingTransaction borrowBook(Long memberId, Long bookId) {
@@ -68,7 +74,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
     }
    @Override
     public List<BorrowingTransaction> getTransactionsByMember(Long memberId) {
-        return borrowingTransactionRepo.findByMemberId(memberId);
+        return borrowingTransactionRepo.findByMember_MemberId(memberId);
     }
 
     @Override

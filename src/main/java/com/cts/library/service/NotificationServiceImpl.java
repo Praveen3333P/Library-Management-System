@@ -20,11 +20,16 @@ import java.util.List;
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
-    @Autowired
     private NotificationRepo notificationRepository;
 
-    @Autowired
     private BorrowingTransactionRepo borrowingTransactionRepo;
+	
+	public NotificationServiceImpl(NotificationRepo notificationRepository,
+			BorrowingTransactionRepo borrowingTransactionRepo) {
+		super();
+		this.notificationRepository = notificationRepository;
+		this.borrowingTransactionRepo = borrowingTransactionRepo;
+	}
     
     @Override
     public Notification createNotification(Notification notification) {

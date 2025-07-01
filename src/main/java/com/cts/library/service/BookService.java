@@ -8,8 +8,8 @@ import com.cts.library.model.Book;
 public interface BookService {
 	
 
-	public Book addBook(Book book);
-	public void deleteBook(Long id);
+	public String addBook(Book book);
+	public String deleteBook(Long id);
 	public String updateBook(Long id, Book book);
 	public Book getBookById(Long id);
 	public List<Book> getAllBooks();

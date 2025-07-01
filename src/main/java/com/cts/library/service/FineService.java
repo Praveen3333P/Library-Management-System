@@ -10,4 +10,5 @@ public interface FineService {
     Fine payFine(Long fineId);
     List<Fine> evaluateAndCreateOverdueFines(List<BorrowingTransaction> transactions);
     void payFinesAndRemoveFromList(List<Fine> fines);
+    Fine markFineAsPaid(Fine fine);
 }

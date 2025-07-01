@@ -20,22 +20,33 @@ public class FineServiceImpl implements FineService {
 
     @Override
     public List<Fine> getFinesByMemberId(Long memberId) {
-        return fineRepo.findByMemberMemberId(memberId);
+        return fineRepo.findByMemberMemberId(memberId); 
     }
 
     @Override
     public Fine payFine(Long fineId) {
         Optional<Fine> optionalFine = fineRepo.findById(fineId);
-        if (optionalFine.isPresent()) {
-            Fine fine = optionalFine.get();
-            if (!"Paid".equalsIgnoreCase(fine.getStatus())) {
-                fine.setStatus("Paid");
-                fine.setTransactionDate(LocalDate.now());
-                return fineRepo.save(fine);
-            }
-        }
-        return null;
+        return optionalFine.map(this::markFineAsPaid).orElse(null);
     }
+
+    @Override
+    public void payFinesAndRemoveFromList(List<Fine> fines) {
+        Iterator<Fine> iterator = fines.iterator();
+        while (iterator.hasNext()) {
+            Fine fine = iterator.next();
+            if (!"Paid".equalsIgnoreCase(fine.getStatus())) {
+                markFineAsPaid(fine);
+            }
+            iterator.remove(); 
+        }
+    }
+
+    public Fine markFineAsPaid(Fine fine) {
+        fine.setStatus("Paid");
+        fine.setTransactionDate(LocalDate.now());
+        return fineRepo.save(fine);
+    }
+
 
     @Override
     public List<Fine> evaluateAndCreateOverdueFines(List<BorrowingTransaction> transactions) {
@@ -61,17 +72,4 @@ public class FineServiceImpl implements FineService {
         return fines;
     }
 
-    @Override
-    public void payFinesAndRemoveFromList(List<Fine> fines) {
-        Iterator<Fine> iterator = fines.iterator();
-        while (iterator.hasNext()) {
-            Fine fine = iterator.next();
-            if (!"Paid".equalsIgnoreCase(fine.getStatus())) {
-                fine.setStatus("Paid");
-                fine.setTransactionDate(LocalDate.now());
-                fineRepo.save(fine);
-            }
-            iterator.remove(); // remove from list
-        }
-    }
 }

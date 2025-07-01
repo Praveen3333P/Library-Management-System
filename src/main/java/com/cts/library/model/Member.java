@@ -1,13 +1,19 @@
 package com.cts.library.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 
@@ -22,17 +28,21 @@ public class Member {
 	private String email;
 	private String phone;
 	private String address;
-	
 	private String username;
 	private String password;
 	private LocalDate membershipExpiryDate;
 	private int borrowingLimit=2;
+	
 	
 	@Enumerated(EnumType.STRING)
 	private MembershipStatus membershipStatus = MembershipStatus.BASIC;
 	
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	
+	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	private List<BorrowingTransaction> transactions;
 	
 	public boolean isMembershipActive() {
         return membershipExpiryDate != null && LocalDate.now().isBefore(membershipExpiryDate);

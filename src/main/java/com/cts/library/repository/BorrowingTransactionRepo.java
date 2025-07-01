@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface BorrowingTransactionRepo extends JpaRepository<BorrowingTransaction, Long> {
-    List<BorrowingTransaction> findByMember_MemberId(Long memberId);
-    List<BorrowingTransaction> findByBook_BookId(Long bookId);
+    List<BorrowingTransaction> findByMemberId(Long memberId);
+    boolean existsByBookIdAndStatus(Long bookId, BorrowingTransaction.Status status);
 }
+

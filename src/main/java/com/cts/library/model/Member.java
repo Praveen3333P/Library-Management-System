@@ -26,6 +26,7 @@ public class Member {
 	private String username;
 	private String password;
 	private LocalDate membershipExpiryDate;
+	private int borrowingLimit=2;
 	
 	@Enumerated(EnumType.STRING)
 	private MembershipStatus membershipStatus = MembershipStatus.BASIC;
@@ -43,7 +44,7 @@ public class Member {
 	}
 
 	public Member(long memberId, String name, String email, String phone, String address, MembershipStatus membershipStatus,
-			String username, String password, Role role) {
+			int borrowingLimit,String username, String password, Role role) {
 		super();
 		this.memberId = memberId;
 		this.name = name;
@@ -54,6 +55,7 @@ public class Member {
 		this.username = username;
 		this.password = password;
 		this.role = role;
+		this.borrowingLimit=borrowingLimit;
 	}
 
 	public long getMemberId() {
@@ -144,6 +146,16 @@ public class Member {
             this.role = role;
         }
 	}
+
+	public int getBorrowingLimit() {
+		return borrowingLimit;
+	}
+
+	public void setBorrowingLimit(int borrowingLimit) {
+		this.borrowingLimit = borrowingLimit;
+	}
+	
+	
 	
 	
 	

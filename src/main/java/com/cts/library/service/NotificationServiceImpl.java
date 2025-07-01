@@ -33,7 +33,7 @@ public class NotificationServiceImpl implements NotificationService {
     
     @Override
     public Notification createNotification(Notification notification) {
-        notification.setDateSent(new Date()); // Automatically set timestamp
+        notification.setDateSent(new Date());
         return notificationRepository.save(notification);
     }
 

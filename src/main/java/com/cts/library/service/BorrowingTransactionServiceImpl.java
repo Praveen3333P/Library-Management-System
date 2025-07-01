@@ -66,8 +66,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 
         return borrowingTransactionRepo.save(transaction);
     }
-
-    @Override
+   @Override
     public List<BorrowingTransaction> getTransactionsByMember(Long memberId) {
         return borrowingTransactionRepo.findByMemberId(memberId);
     }

@@ -3,7 +3,6 @@ package com.cts.library.controller;
 import com.cts.library.service.BorrowingTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 
 @RestController
@@ -15,6 +14,7 @@ public class BorrowingTransactionController {
 
     @PostMapping("/borrow/{memberId}/{bookId}")
     public String borrowBook(@PathVariable Long bookId, @PathVariable Long memberId) {
+
         return transactionService.borrowBook(bookId, memberId);
     }
 

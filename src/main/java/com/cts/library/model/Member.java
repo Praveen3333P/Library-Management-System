@@ -52,6 +52,12 @@ public class Member {
 		// by default we are setting the role to member
 		this.role = Role.MEMBER;
 	}
+	
+	public Member(long memberId, String name, String email, String phone, String address, MembershipStatus membershipStatus,
+	        String username, String password, Role role) {
+	    this(memberId, name, email, phone, address, membershipStatus, 2, username, password, role);
+	}
+
 
 	public Member(long memberId, String name, String email, String phone, String address, MembershipStatus membershipStatus,
 			int borrowingLimit,String username, String password, Role role) {

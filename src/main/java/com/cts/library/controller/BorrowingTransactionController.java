@@ -14,20 +14,12 @@ public class BorrowingTransactionController {
     private BorrowingTransactionService transactionService;
 
     @PostMapping("/borrow/{memberId}/{bookId}")
-<<<<<<< Updated upstream
     public String borrowBook(@PathVariable Long bookId, @PathVariable Long memberId) {
-=======
-    public String borrowBook(@RequestParam Long bookId, @RequestParam Long memberId) {
->>>>>>> Stashed changes
         return transactionService.borrowBook(bookId, memberId);
     }
 
     @PostMapping("/return/{memberId}/{bookId}")
-<<<<<<< Updated upstream
     public String returnBook(@PathVariable Long bookId, @PathVariable Long memberId) {
-=======
-    public String returnBook(@RequestParam Long bookId, @RequestParam Long memberId) {
->>>>>>> Stashed changes
         return transactionService.returnBook(bookId, memberId);
     }
 }

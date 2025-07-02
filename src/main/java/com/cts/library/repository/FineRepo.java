@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface FineRepo extends JpaRepository<Fine, Long> {
-    List<Fine> findByMemberMemberId(Long memberId);
+    
 }

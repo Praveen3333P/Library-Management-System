@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,40 +14,57 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
 
 @Entity
 @Data
 public class Member {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long memberId;
+
+	@NotBlank(message = "Name cannot be Blank")
 	private String name;
+
+	@NotBlank(message = "Email cannot be Blank")
+	@Email(message = "Invalid email format")
 	private String email;
+
+	@NotBlank(message = "Phone Number cannot be Blank")
+	@Size(min = 10, max = 10, message = "Phone Number has to be 10 digits only")
 	private String phone;
+
+	@NotBlank(message = "Address cannot be Blank")
 	private String address;
+
+	@NotBlank(message = "UserName cannot be Blank")
+	@Size(min = 4, max = 20, message = "UserName must be between 4 to 20 characters")
 	private String username;
+	@NotBlank(message = "Password cannot be Blank")
+	@Size(min = 8, message = "Password must be between 8 to 50 characters")
 	private String password;
+
 	private LocalDate membershipExpiryDate;
-	private int borrowingLimit=2;
-	
-	
+	private int borrowingLimit = 2;
+
 	@Enumerated(EnumType.STRING)
 	private MembershipStatus membershipStatus = MembershipStatus.BASIC;
-	
+
 	@Enumerated(EnumType.STRING)
 	private Role role;
-	
+
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	private List<BorrowingTransaction> transactions;
-	
+
 	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	private List<Fine> fines;
-	
+
 	public List<BorrowingTransaction> getTransactions() {
 		return transactions;
 	}
@@ -64,22 +82,21 @@ public class Member {
 	}
 
 	public boolean isMembershipActive() {
-        return membershipExpiryDate != null && LocalDate.now().isBefore(membershipExpiryDate);
-    }
-	
+		return membershipExpiryDate != null && LocalDate.now().isBefore(membershipExpiryDate);
+	}
+
 	public Member() {
 		// by default we are setting the role to member
 		this.role = Role.MEMBER;
 	}
-	
-	public Member(long memberId, String name, String email, String phone, String address, MembershipStatus membershipStatus,
-	        String username, String password, Role role) {
-	    this(memberId, name, email, phone, address, membershipStatus, 2, username, password, role);
+
+	public Member(long memberId, String name, String email, String phone, String address,
+			MembershipStatus membershipStatus, String username, String password, Role role) {
+		this(memberId, name, email, phone, address, membershipStatus, 2, username, password, role);
 	}
 
-
-	public Member(long memberId, String name, String email, String phone, String address, MembershipStatus membershipStatus,
-			int borrowingLimit,String username, String password, Role role) {
+	public Member(long memberId, String name, String email, String phone, String address,
+			MembershipStatus membershipStatus, int borrowingLimit, String username, String password, Role role) {
 		super();
 		this.memberId = memberId;
 		this.name = name;
@@ -90,7 +107,7 @@ public class Member {
 		this.username = username;
 		this.password = password;
 		this.role = role;
-		this.borrowingLimit=borrowingLimit;
+		this.borrowingLimit = borrowingLimit;
 	}
 
 	public long getMemberId() {
@@ -134,16 +151,16 @@ public class Member {
 	}
 
 	public MembershipStatus getMembershipStatus() {
-	    if (membershipExpiryDate == null || LocalDate.now().isAfter(membershipExpiryDate)) {
-	        return MembershipStatus.EXPIRED;
-	    }
-	    return membershipStatus;
+		if (membershipExpiryDate == null || LocalDate.now().isAfter(membershipExpiryDate)) {
+			return MembershipStatus.EXPIRED;
+		}
+		return membershipStatus;
 	}
-	
+
 	public void setMembershipStatus(MembershipStatus status) {
-	    if (this.membershipStatus != MembershipStatus.PRIME || status == MembershipStatus.EXPIRED) {
-	        this.membershipStatus = status;
-	    }
+		if (this.membershipStatus != MembershipStatus.PRIME || status == MembershipStatus.EXPIRED) {
+			this.membershipStatus = status;
+		}
 	}
 
 	public LocalDate getMembershipExpiryDate() {
@@ -175,11 +192,11 @@ public class Member {
 	}
 
 	public void setRole(Role role) {
-		
+
 		// we are making sure member is not changing into admin
 		if (this.role != Role.ADMIN) {
-            this.role = role;
-        }
+			this.role = role;
+		}
 	}
 
 	public int getBorrowingLimit() {
@@ -189,11 +206,5 @@ public class Member {
 	public void setBorrowingLimit(int borrowingLimit) {
 		this.borrowingLimit = borrowingLimit;
 	}
-	
-	
-	
-	
-	
-	
 
 }

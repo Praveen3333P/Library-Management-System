@@ -11,6 +11,7 @@ import com.cts.library.repository.MemberRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -18,81 +19,90 @@ import java.util.Optional;
 @Service
 public class BorrowingTransactionServiceImpl implements BorrowingTransactionService {
 
-    @Autowired
-    private BorrowingTransactionRepo transactionRepo;
+	private final BorrowingTransactionRepo transactionRepo;
+	private final BookRepo bookRepo;
+	private final MemberRepo memberRepo;
+	private final CurrentUser currentUser;
 
-    @Autowired
-    private BookRepo bookRepo;
+	public BorrowingTransactionServiceImpl(BorrowingTransactionRepo transactionRepo, BookRepo bookRepo,
+			MemberRepo memberRepo, CurrentUser currentUser) {
+		this.transactionRepo = transactionRepo;
+		this.bookRepo = bookRepo;
+		this.memberRepo = memberRepo;
+		this.currentUser = currentUser;
+	}
 
-    @Autowired
-    private MemberRepo memberRepo;
-    
-    private CurrentUser currentUser;
+	public String borrowBook(Long bookId, Long memberId) {
 
-    @Override
-    public String borrowBook(Long bookId, Long memberId) {
-    	
-    	if  (currentUser.getCurrentUser().getMemberId() != memberId) {
-    		throw new UnauthorizedAccessException("You dont have rights to borrow a book with other member id");
-    	}
-        Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
-        Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
+		if (!validateCurrentUser(memberId)) {
+			return "Validation Error";
+		}
 
-        if (book.getAvailableCopies() <= 0) {
-            return "No copies available for borrowing.";
-        }
-        
-        if (member.getBorrowingLimit() <= 0) {
-            return "Borrowing limit reached. Cannot borrow more books.";
-        }
-        
-        
-        BorrowingTransaction txn = new BorrowingTransaction();
-        txn.setBook(book);
-        txn.setMember(member);
-        txn.setBorrowDate(LocalDate.now());
-        txn.setReturnDate(LocalDate.now().plusDays(10));
-        txn.setStatus(BorrowingTransaction.Status.BORROWED);
+		Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
+		Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
 
-        transactionRepo.save(txn);
-        
-        book.setAvailableCopies(book.getAvailableCopies() - 1);
-        bookRepo.save(book);
 
-        member.setBorrowingLimit(member.getBorrowingLimit() - 1);
-        memberRepo.save(member);
-        
-        return "Book borrowed successfully.";
-    }
+		if (book.getAvailableCopies() <= 0) {
+			return "No copies available for borrowing.";
+		}
 
-    @Override
-    public String returnBook(Long bookId, Long memberId) {
-    	
-    	if  (currentUser.getCurrentUser().getMemberId() != memberId) {
-    		throw new UnauthorizedAccessException("You dont have rights to return a book with other member id");
-    	}
-    	
-        Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
-        Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
+		if (member.getBorrowingLimit() <= 0) {
+			return "Borrowing limit reached. Cannot borrow more books.";
+		}
 
-        Optional<BorrowingTransaction> optTxn = transactionRepo.findByMember_MemberId(member.getMemberId()).stream()
-            .filter(txn -> txn.getBook().equals(book) && txn.getStatus() == BorrowingTransaction.Status.BORROWED)
-            .findFirst();
+		BorrowingTransaction txn = new BorrowingTransaction();
+		txn.setBook(book);
+		txn.setMember(member);
+		txn.setBorrowDate(LocalDate.now());
+		txn.setReturnDate(LocalDate.now().plusDays(10));
+		txn.setStatus(BorrowingTransaction.Status.BORROWED);
+		System.out.println("txn"+txn);
+		transactionRepo.save(txn);
 
-        if (!optTxn.isPresent()) return "No borrowed transaction found.";
+		book.setAvailableCopies(book.getAvailableCopies() - 1);
+		bookRepo.save(book);
 
-        BorrowingTransaction txn = optTxn.get();
-        txn.setReturnDate(LocalDate.now());
-        txn.setStatus(BorrowingTransaction.Status.RETURNED);
-        transactionRepo.save(txn);
-        
-        book.setAvailableCopies(book.getAvailableCopies() + 1);
-        bookRepo.save(book);
+		member.setBorrowingLimit(member.getBorrowingLimit() - 1);
+		memberRepo.save(member);
 
-        member.setBorrowingLimit(member.getBorrowingLimit() + 1);
-        memberRepo.save(member);
-        
-        return "Book returned successfully.";
-    }
+		return "Book borrowed successfully.";
+	}
+
+	public String returnBook(Long bookId, Long memberId) {
+		validateCurrentUser(memberId);
+
+		Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
+
+		Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
+
+		Optional<BorrowingTransaction> optTxn = transactionRepo.findByMember_MemberId(memberId).stream()
+				.filter(txn -> txn.getBook().equals(book) && txn.getStatus() == BorrowingTransaction.Status.BORROWED)
+				.findFirst();
+
+		if (optTxn.isEmpty()) {
+			return "No borrowed transaction found.";
+		}
+
+		BorrowingTransaction txn = optTxn.get();
+		txn.setReturnDate(LocalDate.now());
+		txn.setStatus(BorrowingTransaction.Status.RETURNED);
+		transactionRepo.save(txn);
+
+		book.setAvailableCopies(book.getAvailableCopies() + 1);
+		bookRepo.save(book);
+
+		member.setBorrowingLimit(member.getBorrowingLimit() + 1);
+		memberRepo.save(member);
+
+		return "Book returned successfully.";
+	}
+
+	private Boolean validateCurrentUser(Long memberId) {
+		Long currentUserId = currentUser.getCurrentUser().getMemberId();
+		if (!currentUserId.equals(memberId)) {
+
+			throw new UnauthorizedAccessException("You don't have rights to act on behalf of another member.");
+		}
+		return true;
+	}
 }
-	

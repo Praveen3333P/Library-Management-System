@@ -23,7 +23,7 @@ public class Scheduler {
     @Scheduled(fixedRate = 5 * 60 * 1000)
     @Transactional
     public void clearExpiredTokens() {
-        LocalDateTime expiry = LocalDateTime.now().minusMinutes(30);
+        LocalDateTime expiry = LocalDateTime.now().minusMinutes(5);
         if (expiry!= null) {
  
             List<MemberToken> expiredUsers = memberTokenRepo.findExpiredTokens(expiry);

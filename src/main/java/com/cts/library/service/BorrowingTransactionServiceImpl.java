@@ -63,7 +63,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
         Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
         Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
 
-        Optional<BorrowingTransaction> optTxn = transactionRepo.findByMemberId(member.getMemberId()).stream()
+        Optional<BorrowingTransaction> optTxn = transactionRepo.findByMember_MemberId(member.getMemberId()).stream()
             .filter(txn -> txn.getBook().equals(book) && txn.getStatus() == BorrowingTransaction.Status.BORROWED)
             .findFirst();
 

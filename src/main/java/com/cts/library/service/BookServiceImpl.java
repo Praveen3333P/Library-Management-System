@@ -24,7 +24,11 @@ public class BookServiceImpl implements BookService {
 
     public String addBook(Book book) {
     	
-    	
+    	 if(currentUser.getCurrentUser().getRole()!=Role.ADMIN) {
+         	
+         	throw new UnauthorizedAccessException("User Not Allowed to Add Book");
+         }
+    	 
         bookRepo.save(book);
         return "Book has been added successfully.";
     }
@@ -34,7 +38,7 @@ public class BookServiceImpl implements BookService {
         
         if(currentUser.getCurrentUser().getRole()!=Role.ADMIN) {
         	
-        	throw new UnauthorizedAccessException("User Not Allowed to Delete Product");
+        	throw new UnauthorizedAccessException("User Not Allowed to Delete Book");
         }
         
         bookRepo.delete(exist);
@@ -44,6 +48,11 @@ public class BookServiceImpl implements BookService {
 
     public String updateBook(Long id, Book updated) {
         Book exist = getBookById(id);
+        
+        if(currentUser.getCurrentUser().getRole()!=Role.ADMIN) {
+        	
+        	throw new UnauthorizedAccessException("User Not Allowed to Update Book");
+        }
 
         exist.setBookId(updated.getBookId());
         exist.setBookName(updated.getBookName());

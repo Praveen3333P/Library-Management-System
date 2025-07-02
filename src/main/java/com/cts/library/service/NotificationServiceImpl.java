@@ -20,17 +20,16 @@ import java.util.List;
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
-    private NotificationRepo notificationRepository;
+    private final NotificationRepo notificationRepository;
+    private final BorrowingTransactionRepo borrowingTransactionRepo;
 
-    private BorrowingTransactionRepo borrowingTransactionRepo;
-	
-	public NotificationServiceImpl(NotificationRepo notificationRepository,
-			BorrowingTransactionRepo borrowingTransactionRepo) {
-		super();
-		this.notificationRepository = notificationRepository;
-		this.borrowingTransactionRepo = borrowingTransactionRepo;
-	}
-    
+    @Autowired
+    public NotificationServiceImpl(NotificationRepo notificationRepository,
+                                   BorrowingTransactionRepo borrowingTransactionRepo) {
+        this.notificationRepository = notificationRepository;
+        this.borrowingTransactionRepo = borrowingTransactionRepo;
+    }
+
     @Override
     public Notification createNotification(Notification notification) {
         notification.setDateSent(new Date());
@@ -46,54 +45,96 @@ public class NotificationServiceImpl implements NotificationService {
     public Notification getNotificationById(Long id) {
         return notificationRepository.findById(id).orElse(null);
     }
-    
-    @Scheduled(cron = "0 0 8 * * ?") 
+
+    @Scheduled(cron = "1 0 0 * * *")
     public void generateDueAndOverdueNotifications() {
         LocalDate today = LocalDate.now();
-
-        List<BorrowingTransaction> allTransactions = borrowingTransactionRepo.findAll(); 
+        List<BorrowingTransaction> allTransactions = borrowingTransactionRepo.findAll();
 
         for (BorrowingTransaction tx : allTransactions) {
-            if (tx.getStatus().equals("RETURNED")) {
-                continue; 
-            }
-
             Member member = tx.getMember();
             Book book = tx.getBook();
             LocalDate returnDate = tx.getReturnDate();
 
-            long daysUntilDue = ChronoUnit.DAYS.between(today, returnDate);
-            long daysOverdue = ChronoUnit.DAYS.between(returnDate, today);
+            if (tx.getStatus().name().equalsIgnoreCase("BORROWED")) {
+                long daysUntilDue = ChronoUnit.DAYS.between(today, returnDate);
+                long daysOverdue = ChronoUnit.DAYS.between(returnDate, today);
 
-            String message;
-            boolean shouldNotify = false;
-
-            if (daysUntilDue >= 0 && daysUntilDue <= 2) {
-                message = "Reminder: Book '" + book.getBookName() + "' is due in " + daysUntilDue + " day(s). Please return it on time.";
-                shouldNotify = true;
-            } else if (daysOverdue > 0) {
-                Fine fine = notificationRepository.findLatestUnpaidFineByMember(member); 
-                message = "Overdue: Book '" + book.getBookName() + "' was due " + daysOverdue + " day(s) ago. Current fine: ₹" + fine.getAmount();
-                shouldNotify = true;
-            } else {
-                continue;
-            }
-
-            if (shouldNotify) {
-                Notification notification = new Notification(daysOverdue, member, book, null, message, new Date());
-//                notification.setMember(member);
-//                notification.setBook(book);
-//                notification.setMessage(message);
-//                notification.setDateSent(new Date());
-
-                if (daysOverdue > 0) {
+                if (daysUntilDue == 1) {
+                    Notification reminder = new Notification(
+                        0, member, book, null,
+                        " Reminder: \"" + book.getBookName() + "\" is due in 1  days (" + returnDate + "). Please return it on time.",
+                        new Date()
+                    );
+                    notificationRepository.save(reminder);
+                } else if (daysOverdue > 0) {
                     Fine fine = notificationRepository.findLatestUnpaidFineByMember(member);
-                    notification.setFine(fine);
+                    if (fine != null && fine.getStatus().equalsIgnoreCase("UNPAID")) {
+                        List<Notification> existingNotifications = notificationRepository.findByMemberAndFine(member, fine);
+
+                        if (existingNotifications.isEmpty()) {
+                            Notification overdue = new Notification(
+                                daysOverdue,
+                                member,
+                                book,
+                                fine,
+                                " Overdue: \"" + book.getBookName() + "\" is " + daysOverdue +
+                                " day(s) overdue. Fine ₹" + fine.getAmount() + " (Fine ID: " + fine.getFineId() + ").",
+                                new Date()
+                            );
+                            notificationRepository.save(overdue);
+                        } else {
+                            Notification latest = existingNotifications.get(0);
+                            latest.setOverdueDays(daysOverdue);
+                            latest.setMessage(" Overdue: \"" + book.getBookName() + "\" is " + daysOverdue +
+                                              " day(s) overdue. Fine ₹" + fine.getAmount() + " (Fine ID: " + fine.getFineId() + ").");
+                            latest.setDateSent(new Date());
+                            notificationRepository.save(latest);
+                        }
+                    }
                 }
 
-                notificationRepository.save(notification);
+            } else if (tx.getStatus().name().equalsIgnoreCase("RETURNED")) {
+                notifyBookReturned(tx);
             }
         }
     }
 
+    @Override
+    public void notifyBookReturned(BorrowingTransaction tx) {
+        Member member = tx.getMember();
+        Book book = tx.getBook();
+
+        Notification returnedNotification = new Notification(
+            0,
+            member,
+            book,
+            null,
+            " Book Returned: \"" + book.getBookName() + "\" successfully returned. Thank you, " + member.getName() + "!",
+            new Date()
+        );
+
+        notificationRepository.save(returnedNotification);
+    }
+
+    // implement this method in fineserviceimplementation for notification if paid 
+//    @Override
+//    public void notifyFinePaid(Fine fine) {
+//        Member member = fine.getMember();
+//
+//        Notification finePaidNotification = new Notification(
+//            0,
+//            member,
+//            null,
+//            fine,
+//            " Fine Paid: " + fine.getAmount() + " has been paid (Fine ID: " + fine.getFineId() +
+//            "). You're all cleared, " + member.getName() + "!",
+//            new Date()
+//        );
+//
+//        notificationRepository.save(finePaidNotification);
+//    }
+    
+    
+//     notificationService.notifyFinePaid(updatedFine);
 }

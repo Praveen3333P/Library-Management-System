@@ -1,11 +1,17 @@
 package com.cts.library.service;
 
+import com.cts.library.model.BorrowingTransaction;
+import com.cts.library.model.Fine;
 import com.cts.library.model.Notification;
 import java.util.List;
 
 public interface NotificationService {
-    Notification createNotification(Notification notification);
-    List<Notification> getAllNotifications();
-    Notification getNotificationById(Long id);
-    public void generateDueAndOverdueNotifications();
+    public Notification createNotification(Notification notification);
+    public List<Notification> getAllNotifications();
+    public Notification getNotificationById(Long id);
+    public void generateDueAndOverdueNotifications(); 
+    public void notifyBookReturned(BorrowingTransaction tx);
+//  public void notifyFinePaid(Fine fine);
+
 }
+

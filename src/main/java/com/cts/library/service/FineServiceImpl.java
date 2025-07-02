@@ -71,6 +71,7 @@ public class FineServiceImpl implements FineService {
                 fine.setStatus("Paid");
                 fine.setTransactionDate(LocalDate.now());
                 fineRepo.save(fine);
+                
             }
             iterator.remove(); // remove from list
         }

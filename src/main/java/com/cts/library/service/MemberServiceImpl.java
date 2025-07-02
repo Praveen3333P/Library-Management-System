@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cts.library.authentication.CurrentUser;
 import com.cts.library.exception.ResourceNotFoundException;
 import com.cts.library.exception.UnauthorizedAccessException;
 import com.cts.library.model.LoginDetails;
@@ -24,10 +25,12 @@ public class MemberServiceImpl implements MemberService {
     private final MemberTokenRepo memberTokenRepo;
 
     private final MemberRepo memberRepo;
+    private CurrentUser currentUser;
 
-    public MemberServiceImpl(MemberRepo memberRepo, MemberTokenRepo memberTokenRepo) {
+    public MemberServiceImpl(MemberRepo memberRepo, MemberTokenRepo memberTokenRepo, CurrentUser currentUser) {
         this.memberRepo = memberRepo;
         this.memberTokenRepo = memberTokenRepo;
+        this.currentUser = currentUser;
     }
 
     public String registerMember(Member member) {
@@ -38,6 +41,7 @@ public class MemberServiceImpl implements MemberService {
         BCryptPasswordEncoder encodedPassword = new BCryptPasswordEncoder();
         String hashedPassword = encodedPassword.encode(member.getPassword());
         member.setPassword(hashedPassword);
+//        return member;
         memberRepo.save(member);
         return "Member registered successfully.";
     }
@@ -53,6 +57,10 @@ public class MemberServiceImpl implements MemberService {
 
     public String updateMember(Long id, Member updated) {
         Member existing = getMemberById(id);
+        
+        if(currentUser.getCurrentUser().getRole()!=Role.MEMBER) {
+        	throw new UnauthorizedAccessException("Admin Not Allowed to Update member details");
+        }
         existing.setName(updated.getName());
         existing.setEmail(updated.getEmail());
         existing.setPhone(updated.getPhone());
@@ -60,9 +68,22 @@ public class MemberServiceImpl implements MemberService {
         memberRepo.save(existing);
         return "Member profile updated.";
     }
+    
+    public String UpdateRole(Long id,Long adminId) {
+    	Member existing = getMemberById(id);
+    	if(currentUser.getCurrentUser().getRole()!=Role.ADMIN) {
+        	throw new UnauthorizedAccessException("Member Not Allowed to Update member role");
+        }
+    	existing.setRole(Role.ADMIN);
+    	
+    	return "Congrats you have promoted ADMIN";
+    }
 
     public String deleteMemberById(Long id) {
         Member member = getMemberById(id);
+        if(currentUser.getCurrentUser().getRole()!=Role.MEMBER) {
+        	throw new UnauthorizedAccessException("Admin Not Allowed to delete member");
+        }
         memberRepo.delete(member);
         return "Member deleted successfully.";
     }
@@ -72,18 +93,17 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public Member getMemberById(Long id) {
-    	
-    	
+//    	if(currentUser.getCurrentUser().getRole()!=Role.ADMIN) {
+//        	throw new UnauthorizedAccessException("Member Not Allowed to look for other members");
+//        }
         return memberRepo.findById(id)
         		
             .orElseThrow(() -> new ResourceNotFoundException("Member with ID " + id + " not found."));
-//        
-//        List<BorrowingTransaction> b= new ArrayList<>();
-//    	
+	
     }
 
     public String activateMembership(Long id, int months) {
-        Member member = getMemberById(id);
+        Member member = getMemberById(id);      
         member.setMembershipStatus(MembershipStatus.PRIME);
         LocalDate newExpiry = (member.getMembershipExpiryDate() == null)
                 ? LocalDate.now().plusMonths(months)

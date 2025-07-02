@@ -24,15 +24,15 @@ public class MemberController {
         return ResponseEntity.ok(memberService.createAdmin(admin));
     }
     @GetMapping("/admin/allmembers")
-    public ResponseEntity<List<Member>> getAllMembers(@RequestParam Long requesterId) {
-        memberService.validateAdmin(requesterId);
+    public ResponseEntity<List<Member>> getAllMembers() {
+//        memberService.validateAdmin(requesterId);
         return ResponseEntity.ok(memberService.getAllMembers());
     }
 
     @GetMapping("/admin/get-member/{id}")
-    public ResponseEntity<Member> getMemberById(@PathVariable Long id,
-                                                @RequestParam Long requesterId) {
-        memberService.validateAdmin(requesterId);
+    public ResponseEntity<Member> getMemberById(@PathVariable Long id
+                                                ) {
+//        memberService.validateAdmin(requesterId);
         Member member = memberService.getMemberById(id);
         return ResponseEntity.ok(member);
     }
@@ -72,9 +72,8 @@ public class MemberController {
 
     @PutMapping("/member/{id}/activate")
     public ResponseEntity<String> activateMembership(@PathVariable Long id,
-                                                     @RequestParam int months,
-                                                     @RequestParam Long requesterId) {
-        memberService.validateSameUser(requesterId, id);
+                                                     @RequestParam int months) {
+//        memberService.validateSameUser(requesterId, id);
         return ResponseEntity.ok(memberService.activateMembership(id, months));
     }
 }

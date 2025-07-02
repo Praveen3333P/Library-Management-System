@@ -1,5 +1,7 @@
 package com.cts.library.service;
 
+import com.cts.library.authentication.CurrentUser;
+import com.cts.library.exception.UnauthorizedAccessException;
 import com.cts.library.model.Book;
 import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.model.Member;
@@ -11,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,9 +26,15 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 
     @Autowired
     private MemberRepo memberRepo;
+    
+    private CurrentUser currentUser;
 
     @Override
     public String borrowBook(Long bookId, Long memberId) {
+    	
+    	if  (currentUser.getCurrentUser().getMemberId() != memberId) {
+    		throw new UnauthorizedAccessException("You dont have rights to borrow a book with other member id");
+    	}
         Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
         Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
 
@@ -60,6 +67,11 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 
     @Override
     public String returnBook(Long bookId, Long memberId) {
+    	
+    	if  (currentUser.getCurrentUser().getMemberId() != memberId) {
+    		throw new UnauthorizedAccessException("You dont have rights to return a book with other member id");
+    	}
+    	
         Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
         Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
 

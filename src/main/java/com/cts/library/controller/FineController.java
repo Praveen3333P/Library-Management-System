@@ -3,29 +3,34 @@ package com.cts.library.controller;
 import com.cts.library.model.Fine;
 import com.cts.library.service.FineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/fine")
+@RequestMapping("/api/fines")
 public class FineController {
 
+    @Autowired
     private FineService fineService;
+    
 
-
-	public FineController(FineService fineService) {
-		super();
-		this.fineService = fineService;
-	}
-
-	@GetMapping("/member/{memberId}")
-    public List<Fine> getFinesByMember(@PathVariable Long memberId) {
-        return fineService.getFinesByMemberId(memberId);
+    /**
+     * 💳 Pay a specific fine by ID.
+     */
+    @PostMapping("/pay/{fineId}")
+    public ResponseEntity<String> payFine(@PathVariable Long fineId) {
+        fineService.payFine(fineId);
+        return ResponseEntity.ok("Fine paid successfully.");
     }
 
-    @PutMapping("/{fineId}/pay")
-    public Fine payFine(@PathVariable Long fineId) {
-        return fineService.payFine(fineId);
-    }
+    /**
+     * 📄 Get all fines for a specific member.
+     */
+//    @GetMapping("/member/{memberId}")
+//    public ResponseEntity<List<Fine>> getFinesByMember(@PathVariable Long memberId) {
+//        List<Fine> fines = fineService.getFinesByMemberId(memberId);
+//        return ResponseEntity.ok(fines);
+//    }
 }

@@ -5,40 +5,50 @@ import com.cts.library.service.NotificationService;
 import com.cts.library.service.NotificationServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/notifications")
 public class NotificationController {
-	
-    private NotificationService notificationService;
 
+    private final NotificationService notificationService;
+
+    @Autowired
     public NotificationController(NotificationService notificationService) {
-		super();
-		this.notificationService = notificationService;
-	}
+        this.notificationService = notificationService;
+    }
 
-	@PostMapping
-    public Notification createNotification(@RequestBody Notification notification) {
-        return notificationService.createNotification(notification);
+    @PostMapping
+    public ResponseEntity<Notification> createNotification(@RequestBody Notification notification) {
+        Notification created = notificationService.createNotification(notification);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping
-    public List<Notification> getAllNotifications() {
-        return notificationService.getAllNotifications();
+    public ResponseEntity<List<Notification>> getAllNotifications() {
+        List<Notification> notifications = notificationService.getAllNotifications();
+        return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/{id}")
-    public Notification getNotification(@PathVariable Long id) {
-        return notificationService.getNotificationById(id);
+    public ResponseEntity<Notification> getNotification(@PathVariable Long id) {
+        Notification notification = notificationService.getNotificationById(id);
+        if (notification != null) {
+            return ResponseEntity.ok(notification);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); 
+        }
     }
-    
+
     @GetMapping("/trigger")
-    public String triggerNotificationsManually() {
+    public ResponseEntity<String> triggerNotificationsManually() {
         ((NotificationServiceImpl) notificationService).generateDueAndOverdueNotifications();
-        return "Notifications triggered.";
+        return ResponseEntity.ok("Notifications triggered successfully.");
     }
+
 
 }

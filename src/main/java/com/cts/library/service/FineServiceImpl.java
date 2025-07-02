@@ -74,6 +74,7 @@ public class FineServiceImpl implements FineService {
      * @param fineId ID of the fine to be paid
      */
     @Override
+
     public void payFine(Long fineId) {
         Fine fine = fineRepo.findById(fineId)
             .orElseThrow(() -> new RuntimeException("Fine not found with ID: " + fineId));

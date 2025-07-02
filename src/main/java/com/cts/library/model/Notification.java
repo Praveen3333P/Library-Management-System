@@ -8,48 +8,59 @@ import java.util.Date;
 @Entity
 @Table(name = "notifications")
 public class Notification {
-
-    @Id
+	
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long notificationId;
+    private Long notificationId;
+
+    private String message;
+
+    private Date dateSent;
 
     @ManyToOne
-    @JoinColumn(name = "memberId", nullable = false)
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "bookId")
     private Book book;
 
     @ManyToOne
-    @JoinColumn(name = "fineId")
     private Fine fine;
 
-    @NotBlank(message = "Message cannot be blank")
-    private String message;
+    private long overdueDays;
 
-    @NotNull(message = "Date sent cannot be null")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateSent;
+    public Notification() {}
 
-	public Notification(long notificationId, Member member, Book book, Fine fine,
-			@NotBlank(message = "Message cannot be blank") String message,
-			@NotNull(message = "Date sent cannot be null") Date dateSent) {
-		super();
-		this.notificationId = notificationId;
-		this.member = member;
-		this.book = book;
-		this.fine = fine;
-		this.message = message;
-		this.dateSent = dateSent;
-	}
-
-	public long getNotificationId() {
+    public Notification(long overdueDays, Member member, Book book, Fine fine, String message, Date dateSent) {
+        this.overdueDays = overdueDays;
+        this.member = member;
+        this.book = book;
+        this.fine = fine;
+        this.message = message;
+        this.dateSent = dateSent;
+    }
+	
+	public Long getNotificationId() {
 		return notificationId;
 	}
 
-	public void setNotificationId(long notificationId) {
+	public void setNotificationId(Long notificationId) {
 		this.notificationId = notificationId;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Date getDateSent() {
+		return dateSent;
+	}
+
+	public void setDateSent(Date dateSent) {
+		this.dateSent = dateSent;
 	}
 
 	public Member getMember() {
@@ -76,20 +87,12 @@ public class Notification {
 		this.fine = fine;
 	}
 
-	public String getMessage() {
-		return message;
+	public long getOverdueDays() {
+		return overdueDays;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public Date getDateSent() {
-		return dateSent;
-	}
-
-	public void setDateSent(Date dateSent) {
-		this.dateSent = dateSent;
+	public void setOverdueDays(long overdueDays) {
+		this.overdueDays = overdueDays;
 	}
 
 	

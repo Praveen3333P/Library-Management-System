@@ -6,7 +6,6 @@ import com.cts.library.model.Member;
 import com.cts.library.repository.FineRepo;
 import com.cts.library.repository.MemberRepo;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +16,15 @@ import java.util.Optional;
 @Service
 public class FineServiceImpl implements FineService {
 
-    @Autowired
     private MemberRepo memberRepo;
 
-    @Autowired
     private FineRepo fineRepo;
-
+    
+    public FineServiceImpl(MemberRepo memberRepo, FineRepo fineRepo) {
+    	this.memberRepo = memberRepo;
+    	this.fineRepo = fineRepo;
+    }
+    
     /**
      * Scheduled method that runs daily at 1 AM to process fines.
      * - Creates a new fine on the first overdue day.
@@ -47,13 +49,11 @@ public class FineServiceImpl implements FineService {
                         .findFirst();
 
                     if (existingFineOpt.isPresent()) {
-                        // 🔁 Update existing fine
                         Fine existingFine = existingFineOpt.get();
                         existingFine.setAmount(existingFine.getAmount() + 20.0);
                         existingFine.setTransactionDate(today);
                         fineRepo.save(existingFine);
                     } else {
-                        // 🆕 Create new fine
                         Fine newFine = new Fine();
                         newFine.setMember(member);
                         newFine.setAmount(20.0);

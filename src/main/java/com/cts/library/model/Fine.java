@@ -2,6 +2,8 @@ package com.cts.library.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +15,7 @@ public class Fine {
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
+    @JsonBackReference
     private Member member;
 
     @ManyToOne

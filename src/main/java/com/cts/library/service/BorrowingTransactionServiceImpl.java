@@ -32,7 +32,15 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 		this.currentUser = currentUser;
 	}
 
+<<<<<<< Updated upstream
 	public String borrowBook(Long bookId, Long memberId) {
+=======
+    @Autowired
+    private MemberRepo memberRepo;
+    
+    @Autowired
+    private CurrentUser currentUser;
+>>>>>>> Stashed changes
 
 		if (!validateCurrentUser(memberId)) {
 			return "Validation Error";

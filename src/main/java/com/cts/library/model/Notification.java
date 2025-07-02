@@ -18,12 +18,15 @@ public class Notification {
     private Date dateSent;
 
     @ManyToOne
+    @JoinColumn(name="member_id")
     private Member member;
 
     @ManyToOne
+    @JoinColumn(name="book_id")
     private Book book;
 
     @ManyToOne
+    @JoinColumn(name="fine_id")
     private Fine fine;
 
     private long overdueDays;

@@ -13,7 +13,7 @@ public class BorrowingTransactionController {
     private BorrowingTransactionService transactionService;
 
     @PostMapping("/borrow/{memberId}/{bookId}")
-    public String borrowBook(@PathVariable Long bookId, @PathVariable Long memberId) {
+    public String borrowBook(@PathVariable Long memberId, @PathVariable Long bookId) {
 
         return transactionService.borrowBook(bookId, memberId);
     }

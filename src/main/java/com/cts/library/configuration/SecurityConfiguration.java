@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.cts.library.filter.AuthenticationFilter;
 
@@ -15,7 +14,6 @@ public class SecurityConfiguration {
 
     private final AuthenticationFilter authenticationFilter;
 
-    @Autowired
     public SecurityConfiguration(AuthenticationFilter authenticationFilter) {
         this.authenticationFilter = authenticationFilter;
     }
@@ -25,7 +23,7 @@ public class SecurityConfiguration {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/member/**","/books/**","/admin/**", "/login").permitAll()
+                .requestMatchers("/member/**","/books/**","/admin/**", "/login","/fines/**").permitAll()
                 .anyRequest().authenticated()
             );
 

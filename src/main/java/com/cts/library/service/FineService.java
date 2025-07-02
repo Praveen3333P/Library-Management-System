@@ -1,13 +1,17 @@
 package com.cts.library.service;
 
-import com.cts.library.model.Fine;
-import com.cts.library.model.BorrowingTransaction;
-
-import java.util.List;
-
 public interface FineService {
-    List<Fine> getFinesByMemberId(Long memberId);
-    Fine payFine(Long fineId);
-    List<Fine> evaluateAndCreateOverdueFines(List<BorrowingTransaction> transactions);
-    void payFinesAndRemoveFromList(List<Fine> fines);
+
+    /**
+     * Scheduled method to process fines daily.
+     * - Creates a new fine on the first overdue day.
+     * - Increments existing fine by ₹20 for each additional overdue day.
+     */
+    void processDailyFines();
+
+    /**
+     * Marks a fine as paid.
+     * @param fineId ID of the fine to be paid
+     */
+    void payFine(Long fineId);
 }

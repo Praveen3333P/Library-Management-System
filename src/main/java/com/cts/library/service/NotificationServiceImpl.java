@@ -23,7 +23,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepo notificationRepository;
     private final BorrowingTransactionRepo borrowingTransactionRepo;
 
-    @Autowired
     public NotificationServiceImpl(NotificationRepo notificationRepository,
                                    BorrowingTransactionRepo borrowingTransactionRepo) {
         this.notificationRepository = notificationRepository;
@@ -69,7 +68,7 @@ public class NotificationServiceImpl implements NotificationService {
                     notificationRepository.save(reminder);
                 } else if (daysOverdue > 0) {
                     Fine fine = notificationRepository.findLatestUnpaidFineByMember(member);
-                    if (fine != null && fine.getStatus().equalsIgnoreCase("UNPAID")) {
+                    if (fine != null && fine.getFineStatus().equalsIgnoreCase("UNPAID")) {
                         List<Notification> existingNotifications = notificationRepository.findByMemberAndFine(member, fine);
 
                         if (existingNotifications.isEmpty()) {

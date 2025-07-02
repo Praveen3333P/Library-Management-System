@@ -1,8 +1,15 @@
 package com.cts.library.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.cts.library.exception.ResourceNotFoundException;
 import com.cts.library.exception.UnauthorizedAccessException;
-import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.model.LoginDetails;
 import com.cts.library.model.Member;
 import com.cts.library.model.MemberToken;
@@ -10,15 +17,6 @@ import com.cts.library.model.MembershipStatus;
 import com.cts.library.model.Role;
 import com.cts.library.repository.MemberRepo;
 import com.cts.library.repository.MemberTokenRepo;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class MemberServiceImpl implements MemberService {

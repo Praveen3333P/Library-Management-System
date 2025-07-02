@@ -44,6 +44,26 @@ public class Member {
 	@JsonManagedReference
 	private List<BorrowingTransaction> transactions;
 	
+	@OneToMany(mappedBy = "fine", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	private List<Fine> fines;
+	
+	public List<BorrowingTransaction> getTransactions() {
+		return transactions;
+	}
+
+	public void setTransactions(List<BorrowingTransaction> transactions) {
+		this.transactions = transactions;
+	}
+
+	public List<Fine> getFines() {
+		return fines;
+	}
+
+	public void setFines(List<Fine> fines) {
+		this.fines = fines;
+	}
+
 	public boolean isMembershipActive() {
         return membershipExpiryDate != null && LocalDate.now().isBefore(membershipExpiryDate);
     }
@@ -52,6 +72,12 @@ public class Member {
 		// by default we are setting the role to member
 		this.role = Role.MEMBER;
 	}
+	
+	public Member(long memberId, String name, String email, String phone, String address, MembershipStatus membershipStatus,
+	        String username, String password, Role role) {
+	    this(memberId, name, email, phone, address, membershipStatus, 2, username, password, role);
+	}
+
 
 	public Member(long memberId, String name, String email, String phone, String address, MembershipStatus membershipStatus,
 			int borrowingLimit,String username, String password, Role role) {

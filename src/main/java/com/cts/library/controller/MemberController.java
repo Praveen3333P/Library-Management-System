@@ -49,9 +49,7 @@ public class MemberController {
     }
 
     @GetMapping("/member/{id}/profile")
-    public ResponseEntity<Member> getMemberProfile(@PathVariable Long id,
-                                                   @RequestParam Long requesterId) {
-        memberService.validateSameUser(requesterId, id);
+    public ResponseEntity<Member> getMemberProfile(@PathVariable Long id) {
         Member member = memberService.getMemberById(id);
         memberService.updateMembershipStatus(member);
         return ResponseEntity.ok(member);

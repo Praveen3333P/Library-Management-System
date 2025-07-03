@@ -4,12 +4,17 @@ import java.util.List;
 
 import com.cts.library.model.Book;
 
+import jakarta.transaction.Transactional;
+
 
 public interface BookService {
 	
-
 	public String addBook(Book book);
+	
+	@Transactional
 	public String deleteBook(Long id);
+	
+	@Transactional
 	public String updateBook(Long id, Book book);
 	public Book getBookById(Long id);
 	public List<Book> getAllBooks();

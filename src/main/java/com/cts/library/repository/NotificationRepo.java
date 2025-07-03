@@ -57,6 +57,8 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
           )
         """, nativeQuery = true)
     int insertOverdueNotifications();
+    
+    void deleteByMember_MemberId(long memberId);
 
 
 

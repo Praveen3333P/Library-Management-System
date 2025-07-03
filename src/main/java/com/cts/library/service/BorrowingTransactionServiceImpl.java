@@ -30,11 +30,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 		this.currentUser = currentUser;
 	}
 
-
 	public String borrowBook(Long bookId, Long memberId) {
-    
-
-
 		if (!validateCurrentUser(memberId)) {
 			return "Validation Error";
 		}

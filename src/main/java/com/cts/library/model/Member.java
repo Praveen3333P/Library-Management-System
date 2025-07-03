@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -46,8 +47,10 @@ public class Member {
 	@NotBlank(message = "UserName cannot be Blank")
 	@Size(min = 4, max = 20, message = "UserName must be between 4 to 20 characters")
 	private String username;
+	
 	@NotBlank(message = "Password cannot be Blank")
 	@Size(min = 8, message = "Password must be between 8 to 50 characters")
+	@JsonIgnore
 	private String password;
 
 	private LocalDate membershipExpiryDate;

@@ -21,5 +21,7 @@ public interface MemberTokenRepo extends JpaRepository<MemberToken, Long>{
 
 	@Query("SELECT u FROM MemberToken u WHERE u.generatedAt <= :expiry")
 	List<MemberToken> findExpiredTokens(@Param("expiry") LocalDateTime expiry);
+	
+	void deleteByMember_MemberId(Long memberId);
 
 }

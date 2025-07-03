@@ -17,22 +17,36 @@ import com.cts.library.model.Member;
 import com.cts.library.model.MemberToken;
 import com.cts.library.model.MembershipStatus;
 import com.cts.library.model.Role;
+import com.cts.library.repository.BorrowingTransactionRepo;
+import com.cts.library.repository.FineRepo;
 import com.cts.library.repository.MemberRepo;
 import com.cts.library.repository.MemberTokenRepo;
+import com.cts.library.repository.NotificationRepo;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepo memberRepo;
+    private final BorrowingTransactionRepo transactionRepo;
+    private final FineRepo fineRepo;
+    private final NotificationRepo notificationRepo;
     private final MemberTokenRepo memberTokenRepo;
     private final CurrentUser currentUser;
 
     public MemberServiceImpl(MemberRepo memberRepo,
-                             MemberTokenRepo memberTokenRepo,
-                             CurrentUser currentUser) {
+    		BorrowingTransactionRepo transactionRepo, 
+    		FineRepo fineRepo,
+    		NotificationRepo notificationRepo,
+    		MemberTokenRepo memberTokenRepo,
+    		CurrentUser currentUser) {
         this.memberRepo = memberRepo;
         this.memberTokenRepo = memberTokenRepo;
         this.currentUser = currentUser;
+        this.transactionRepo = transactionRepo;
+        this.fineRepo = fineRepo;
+        this .notificationRepo = notificationRepo;
     }
 
      
@@ -57,12 +71,16 @@ public class MemberServiceImpl implements MemberService {
         return "Admin created successfully.";
     }
 
-     
+     @Transactional
     public String updateMember(Long id, Member updated) {
         Member existing = getMemberById(id);
 
         if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
             throw new UnauthorizedAccessException("Admin not allowed to update member details.");
+        }
+        
+        if (currentUser.getCurrentUser().getMemberId() != id) {
+        	throw new UnauthorizedAccessException("You are not allowed to update your profile");
         }
 
         existing.setName(updated.getName());
@@ -73,7 +91,17 @@ public class MemberServiceImpl implements MemberService {
 
         return "Member profile updated.";
     }
-
+    @Transactional
+    public String updatePassword(Long id, String plainText) {
+    	Member existing = getMemberById(id);
+    	if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
+            throw new UnauthorizedAccessException("Admin not allowed to update member details.");
+        }
+    	
+    	existing.setPassword(hashPassword(plainText));
+    	return "";
+    }
+    @Transactional
     public String UpdateRole(Long id, Long adminId) {
         Member member = getMemberById(id);
 
@@ -87,14 +115,17 @@ public class MemberServiceImpl implements MemberService {
         return "Congrats, you have been promoted to ADMIN.";
     }
 
-     
+     @Transactional
     public String deleteMemberById(Long id) {
         Member member = getMemberById(id);
 
         if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
             throw new UnauthorizedAccessException("Only members can delete their own accounts.");
         }
-
+        transactionRepo.deleteByMember_MemberId(id);
+        fineRepo.deleteByMember_MemberId(id);
+        notificationRepo.deleteByMember_MemberId(id);
+        memberTokenRepo.deleteByMember_MemberId(id);
         memberRepo.delete(member);
         return "Member deleted successfully.";
     }
@@ -106,6 +137,11 @@ public class MemberServiceImpl implements MemberService {
 
      
     public Member getMemberById(Long id) {
+    	
+    	 if (currentUser.getCurrentUser().getRole() != Role.ADMIN && currentUser.getCurrentUser().getMemberId() != id) {
+             throw new UnauthorizedAccessException("You are not allowed to view other person profile");
+         }
+    	
         return memberRepo.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Member with ID " + id + " not found."));
     }
@@ -136,20 +172,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
      
-    public void validateAdmin(Long requesterId) {
-        Member requester = getMemberById(requesterId);
-
-        if (requester.getRole() != Role.ADMIN) {
-            throw new UnauthorizedAccessException("Only ADMINs can perform this action.");
-        }
-    }
-
-     
-    public void validateSameUser(Long requesterId, Long targetMemberId) {
-        if (!requesterId.equals(targetMemberId)) {
-            throw new UnauthorizedAccessException("You can only modify your own account.");
-        }
-    }
 
     public Member loginMember(LoginDetails loginDetails) {
         Member member = memberRepo.findByUsername(loginDetails.getUserName());

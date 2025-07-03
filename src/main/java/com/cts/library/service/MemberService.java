@@ -10,13 +10,12 @@ public interface MemberService {
 	public String createAdmin(Member adminMember);
 	public String registerMember(Member member);
 	public String updateMember(Long id, Member member);
+	public String updatePassword(Long id, String plainText);
 	public String deleteMemberById(Long id);
 	public List<Member> getAllMembers();
 	public Member getMemberById(Long id);
 	public String activateMembership(Long memberId, int monthsToExtend);
 	public void updateMembershipStatus(Member member);
-	public void validateAdmin(Long requesterId);
-	public void validateSameUser(Long requesterId, Long targetMemberId);
 	public Member loginMember(LoginDetails loginDetails);
 }
 	

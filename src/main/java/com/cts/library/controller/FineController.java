@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/fines")
+@RequestMapping("/fines")
 public class FineController {
 
     @Autowired

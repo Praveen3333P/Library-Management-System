@@ -81,6 +81,9 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 		}
 
 		BorrowingTransaction txn = optTxn.get();
+		if (txn.getReturnDate() != null && txn.getReturnDate().isBefore(LocalDate.now())) {
+	        return "Return date exceeded. Please pay your pending fine before returning the book.";
+	    }
 		txn.setReturnDate(LocalDate.now());
 		txn.setStatus(BorrowingTransaction.Status.RETURNED);
 		transactionRepo.save(txn);

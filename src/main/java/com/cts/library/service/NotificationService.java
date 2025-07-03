@@ -10,8 +10,4 @@ public interface NotificationService {
     public List<Notification> getAllNotifications();
     public Notification getNotificationById(Long id);
     public void generateDueAndOverdueNotifications(); 
-    public void notifyBookReturned(BorrowingTransaction tx);
-//  public void notifyFinePaid(Fine fine);
-
 }
-

@@ -37,11 +37,11 @@ public interface FineRepo extends JpaRepository<Fine, Long> {
 	@Query(value = """
 	    UPDATE fine f
 	    JOIN borrowing_transaction bt ON f.transaction_id = bt.transaction_id
-	    SET f.amount = DATEDIFF(CURRENT_DATE, bt.return_date) * 20.0,
+	    SET f.amount = f.amount+20,
 	        f.transaction_date = CURRENT_DATE
 	    WHERE f.fine_status = 'PENDING'
 	      AND bt.status = 'BORROWED'
-	      AND bt.return_date < CURRENT_DATE
+	      AND CURRENT_DATE != f.transaction_date
 	    """, nativeQuery = true)
 	int updatePendingFineAmountsDaily();
 

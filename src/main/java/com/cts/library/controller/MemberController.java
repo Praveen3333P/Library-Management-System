@@ -53,8 +53,8 @@ public class MemberController {
     }
 
     @PutMapping("/member/{id}/update")
-    public ResponseEntity<String> updateMember(@PathVariable Long id,
-                                               @RequestBody Member member) {
+    public ResponseEntity<String> updateMember(@PathVariable Long id,@RequestBody Member member) {
+
         return ResponseEntity.ok(memberService.updateMember(id, member));
     }
     @PutMapping("/member/{id}/update-password")
@@ -64,6 +64,7 @@ public class MemberController {
     }
 
     @DeleteMapping("/member/{id}/delete")
+
     public ResponseEntity<String> deleteMember(@PathVariable Long id) {
         return ResponseEntity.ok(memberService.deleteMemberById(id));
     }

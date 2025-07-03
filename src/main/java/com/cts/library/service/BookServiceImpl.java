@@ -8,6 +8,7 @@ import com.cts.library.model.Member;
 import com.cts.library.model.Role;
 import com.cts.library.repository.BookRepo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class BookServiceImpl implements BookService {
         bookRepo.save(book);
         return "Book has been added successfully.";
     }
-
+    @Transactional
     public String deleteBook(Long id) {
         Book exist = getBookById(id);
         
@@ -45,7 +46,7 @@ public class BookServiceImpl implements BookService {
         
         return "Book has been deleted successfully.";
     }
-    
+    @Transactional
     public String updateBook(Long id, Book updated) {
         Book exist = getBookById(id);
         
@@ -53,6 +54,7 @@ public class BookServiceImpl implements BookService {
         	
         	throw new UnauthorizedAccessException("User Not Allowed to Update Book");
         }
+
         exist.setBookName(updated.getBookName());
         exist.setGenre(updated.getGenre());
         exist.setISBN(updated.getISBN());

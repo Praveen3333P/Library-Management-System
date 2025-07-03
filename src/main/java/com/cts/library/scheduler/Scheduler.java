@@ -20,10 +20,10 @@ public class Scheduler {
         this.memberTokenRepo = memberTokenRepo;
     }
  
-    @Scheduled(fixedRate = 5 * 60 * 1000)
+    @Scheduled(fixedRate = 60 * 60 * 1000)
     @Transactional
     public void clearExpiredTokens() {
-        LocalDateTime expiry = LocalDateTime.now().minusMinutes(5);
+        LocalDateTime expiry = LocalDateTime.now().minusMinutes(60);
         if (expiry!= null) {
  
             List<MemberToken> expiredUsers = memberTokenRepo.findExpiredTokens(expiry);

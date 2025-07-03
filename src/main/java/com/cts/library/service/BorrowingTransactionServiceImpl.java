@@ -9,16 +9,14 @@ import com.cts.library.repository.BookRepo;
 import com.cts.library.repository.BorrowingTransactionRepo;
 import com.cts.library.repository.MemberRepo;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
 public class BorrowingTransactionServiceImpl implements BorrowingTransactionService {
-
+    
 	private final BorrowingTransactionRepo transactionRepo;
 	private final BookRepo bookRepo;
 	private final MemberRepo memberRepo;
@@ -32,15 +30,10 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 		this.currentUser = currentUser;
 	}
 
-<<<<<<< Updated upstream
+
 	public String borrowBook(Long bookId, Long memberId) {
-=======
-    @Autowired
-    private MemberRepo memberRepo;
     
-    @Autowired
-    private CurrentUser currentUser;
->>>>>>> Stashed changes
+
 
 		if (!validateCurrentUser(memberId)) {
 			return "Validation Error";

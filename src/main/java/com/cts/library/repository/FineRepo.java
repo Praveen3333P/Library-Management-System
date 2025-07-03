@@ -31,5 +31,19 @@ public interface FineRepo extends JpaRepository<Fine, Long> {
 	      )
 	    """, nativeQuery = true)
 	int insertPendingFinesForOverdueTransactions();
+	
+	@Modifying
+	@Transactional
+	@Query(value = """
+	    UPDATE fine f
+	    JOIN borrowing_transaction bt ON f.transaction_id = bt.transaction_id
+	    SET f.amount = DATEDIFF(CURRENT_DATE, bt.return_date) * 20.0,
+	        f.transaction_date = CURRENT_DATE
+	    WHERE f.fine_status = 'PENDING'
+	      AND bt.status = 'BORROWED'
+	      AND bt.return_date < CURRENT_DATE
+	    """, nativeQuery = true)
+	int updatePendingFineAmountsDaily();
+
 
 }

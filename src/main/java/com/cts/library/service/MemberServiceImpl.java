@@ -69,6 +69,8 @@ public class MemberServiceImpl implements MemberService {
         existing.setEmail(updated.getEmail());
         existing.setPhone(updated.getPhone());
         existing.setAddress(updated.getAddress());
+        existing.setUsername(updated.getUsername());
+        existing.setPassword(updated.getPassword());
         memberRepo.save(existing);
 
         return "Member profile updated.";

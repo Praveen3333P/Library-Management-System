@@ -50,7 +50,7 @@ public class Member {
 	
 	@NotBlank(message = "Password cannot be Blank")
 	@Size(min = 8, message = "Password must be between 8 to 50 characters")
-	@JsonIgnore
+//	@JsonIgnore
 	private String password;
 
 	private LocalDate membershipExpiryDate;

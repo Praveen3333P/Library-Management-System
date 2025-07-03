@@ -57,16 +57,16 @@ public class MemberController {
 
     @PutMapping("/member/{id}/update")
     public ResponseEntity<String> updateMember(@PathVariable Long id,
-                                               @RequestBody Member member,
-                                               @RequestParam Long requesterId) {
-        memberService.validateSameUser(requesterId, id);
+                                               @RequestBody Member member
+                                              ) {
+//        memberService.validateSameUser(requesterId, id);
         return ResponseEntity.ok(memberService.updateMember(id, member));
     }
 
     @DeleteMapping("/member/{id}/delete")
-    public ResponseEntity<String> deleteMember(@PathVariable Long id,
-                                               @RequestParam Long requesterId) {
-        memberService.validateAdmin(requesterId);
+    public ResponseEntity<String> deleteMember(@PathVariable Long id
+                                              ) {
+//        memberService.validateAdmin(requesterId);
         return ResponseEntity.ok(memberService.deleteMemberById(id));
     }
 

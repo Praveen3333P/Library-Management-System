@@ -44,17 +44,17 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBookById(id));
     }
 
-    @GetMapping("/search/{title}")
+    @GetMapping("/search-title/{title}")
     public ResponseEntity<List<Book>> searchByTitle(@PathVariable String title) {
         return ResponseEntity.ok(bookService.searchByTitle(title));
     }
 
-    @GetMapping("/search/{genre}")
+    @GetMapping("/search-genre/{genre}")
     public ResponseEntity<List<Book>> searchByGenre(@PathVariable String genre) {
         return ResponseEntity.ok(bookService.searchByGenre(genre));
     }
 
-    @GetMapping("/search/{author}")
+    @GetMapping("/search-author/{author}")
     public ResponseEntity<List<Book>> searchByAuthor(@PathVariable String author) {
         return ResponseEntity.ok(bookService.searchByAuthor(author));
     }

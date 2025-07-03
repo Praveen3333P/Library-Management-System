@@ -31,5 +31,6 @@ public interface FineRepo extends JpaRepository<Fine, Long> {
 	      )
 	    """, nativeQuery = true)
 	int insertPendingFinesForOverdueTransactions();
+	void deleteByMember_MemberId(Long memberId);
 
 }

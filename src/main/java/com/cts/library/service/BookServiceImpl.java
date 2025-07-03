@@ -45,7 +45,7 @@ public class BookServiceImpl implements BookService {
         
         return "Book has been deleted successfully.";
     }
-
+    
     public String updateBook(Long id, Book updated) {
         Book exist = getBookById(id);
         
@@ -53,8 +53,6 @@ public class BookServiceImpl implements BookService {
         	
         	throw new UnauthorizedAccessException("User Not Allowed to Update Book");
         }
-
-        exist.setBookId(updated.getBookId());
         exist.setBookName(updated.getBookName());
         exist.setGenre(updated.getGenre());
         exist.setISBN(updated.getISBN());

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -50,7 +51,7 @@ public class Member {
 	
 	@NotBlank(message = "Password cannot be Blank")
 	@Size(min = 8, message = "Password must be between 8 to 50 characters")
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 
 	private LocalDate membershipExpiryDate;

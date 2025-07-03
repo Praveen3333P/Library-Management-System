@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 public class BorrowingTransactionServiceImpl implements BorrowingTransactionService {
-
+    
 	private final BorrowingTransactionRepo transactionRepo;
 	private final BookRepo bookRepo;
 	private final MemberRepo memberRepo;
@@ -31,7 +31,6 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 	}
 
 	public String borrowBook(Long bookId, Long memberId) {
-
 		if (!validateCurrentUser(memberId)) {
 			return "Validation Error";
 		}

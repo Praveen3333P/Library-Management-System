@@ -22,4 +22,45 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUnauthorized(UnauthorizedAccessException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
+    
+    @ExceptionHandler(FineNotFoundException.class)
+    public ResponseEntity<String> handleFineNotFound(FineNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(FineAlreadyPaidException.class)
+    public ResponseEntity<String> handleFineAlreadyPaid(FineAlreadyPaidException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+    
+    
+    @ExceptionHandler(BorrowingTransactionNotFoundException.class)
+    public ResponseEntity<String> handleTransactionNotFound(BorrowingTransactionNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<String> handleBookUnavailable(BookNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BorrowingLimitExceededException.class)
+    public ResponseEntity<String> handleLimitExceeded(BorrowingLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+    
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<String> handleMemberNotFound(MemberNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+
+    @ExceptionHandler(ReturnNotAllowedException.class)
+    public ResponseEntity<String> handleReturnNotAllowed(ReturnNotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+
+    
+    
 }

@@ -2,7 +2,6 @@ package com.cts.library.service;
 
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -10,54 +9,40 @@ import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.model.Fine;
 import com.cts.library.repository.BorrowingTransactionRepo;
 import com.cts.library.repository.FineRepo;
-import com.cts.library.repository.MemberRepo;
 
 @Service
 public class FineServiceImpl implements FineService {
 
-    private BorrowingTransactionRepo borrowingTransactionRepo;
+    private final FineRepo fineRepo;
+    private final BorrowingTransactionRepo borrowingTransactionRepo;
 
-	@Autowired
-	private MemberRepo memberRepo;
-	@Autowired
-	private FineRepo fineRepo;
+    public FineServiceImpl(FineRepo fineRepo, BorrowingTransactionRepo borrowingTransactionRepo) {
+        this.fineRepo = fineRepo;
+        this.borrowingTransactionRepo = borrowingTransactionRepo;
+    }
 
-	public FineServiceImpl(MemberRepo memberRepo, FineRepo fineRepo, BorrowingTransactionRepo borrowingTransactionRepo) {
-		this.memberRepo = memberRepo;
-		this.fineRepo = fineRepo;
-		this.borrowingTransactionRepo = borrowingTransactionRepo;
-	}
+    @Override
+    @Scheduled(cron = "0 16 17 * * ?") // Runs daily at 5:16 PM
+    public void processDailyFines() {
+        fineRepo.insertPendingFinesForOverdueTransactions();
+        fineRepo.updatePendingFineAmountsDaily();
+    }
 
-	/**
-	 * Scheduled method that runs daily at 1 AM to process fines. - Creates a new
-	 * fine on the first overdue day. - Increments existing fine by ₹20 for each
-	 * additional overdue day.
-	 */
+    @Override
+    public void payFine(Long fineId) {
+        Fine fine = fineRepo.findById(fineId)
+            .orElseThrow(() -> new RuntimeException("Fine not found with ID: " + fineId));
 
-	@Override
+        if ("PAID".equalsIgnoreCase(fine.getFineStatus())) {
+            throw new IllegalStateException("Fine is already paid.");
+        }
 
-	@Scheduled(cron = "0 16 17 * * ?") // Every day at 3:43 PM
-	public void processDailyFines() {
-		fineRepo.insertPendingFinesForOverdueTransactions();
-		fineRepo.updatePendingFineAmountsDaily();
-	}
-	
-	@Override
-	public void payFine(Long fineId) {
-	    Fine fine = fineRepo.findById(fineId)
-	            .orElseThrow(() -> new RuntimeException("Fine not found with ID: " + fineId));
+        fine.setFineStatus("PAID");
+        fineRepo.save(fine);
 
-	    if ("PAID".equalsIgnoreCase(fine.getFineStatus())) {
-	        throw new IllegalStateException("Fine is already paid.");
-	    }
-	    
-	    fine.setFineStatus("PAID");
-	    fineRepo.save(fine);
-
-	    BorrowingTransaction transaction = fine.getTransaction();
-	    transaction.setStatus(BorrowingTransaction.Status.RETURNED);
-	    transaction.setReturnDate(LocalDate.now());
-	    borrowingTransactionRepo.save(transaction);
-	}
-
+        BorrowingTransaction transaction = fine.getTransaction();
+        transaction.setStatus(BorrowingTransaction.Status.RETURNED);
+        transaction.setReturnDate(LocalDate.now());
+        borrowingTransactionRepo.save(transaction);
+    }
 }

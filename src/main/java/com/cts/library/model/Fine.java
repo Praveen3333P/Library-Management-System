@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,28 +27,18 @@ public class Fine {
     @JoinColumn(name = "transaction_id", nullable = false)
     private BorrowingTransaction transaction;
 
-    public BorrowingTransaction getTransaction() {
-		return transaction;
-	}
-
-	public void setTransaction(BorrowingTransaction transaction) {
-		this.transaction = transaction;
-	}
-
-	private double amount;
-
+    private double amount;
     private String fineStatus;
-
     private LocalDate transactionDate;
 
     public Fine() {
     }
 
-    public Fine(Long fineId, Member member, double amount, String finestatus, LocalDate transactionDate) {
+    public Fine(Long fineId, Member member, double amount, String fineStatus, LocalDate transactionDate) {
         this.fineId = fineId;
         this.member = member;
         this.amount = amount;
-        this.fineStatus = finestatus;
+        this.fineStatus = fineStatus;
         this.transactionDate = transactionDate;
     }
 
@@ -69,6 +58,14 @@ public class Fine {
         this.member = member;
     }
 
+    public BorrowingTransaction getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(BorrowingTransaction transaction) {
+        this.transaction = transaction;
+    }
+
     public double getAmount() {
         return amount;
     }
@@ -81,8 +78,8 @@ public class Fine {
         return fineStatus;
     }
 
-    public void setFineStatus(String finestatus) {
-        this.fineStatus = finestatus;
+    public void setFineStatus(String fineStatus) {
+        this.fineStatus = fineStatus;
     }
 
     public LocalDate getTransactionDate() {

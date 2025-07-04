@@ -1,9 +1,9 @@
 package com.cts.library.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "notifications")
@@ -19,6 +19,7 @@ public class Notification {
 
     @ManyToOne
     @JoinColumn(name="member_id")
+    @JsonBackReference
     private Member member;
 
     @ManyToOne

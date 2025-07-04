@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -73,6 +74,11 @@ public class MemberServiceImpl implements MemberService {
 
      @Transactional
     public String updateMember(Long id, Member updated) {
+    	 
+    	 if (currentUser.getCurrentUser().getMemberId() != id) {
+    		 throw new UnauthorizedAccessException("You are not allowed to update other's profile");
+    	 }
+    	 
         Member existing = getMemberById(id);
 
         if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
@@ -82,17 +88,12 @@ public class MemberServiceImpl implements MemberService {
         if(currentUser.getCurrentUser() == null) {
         	throw new UnauthorizedAccessException("Please Login");
         }
-        
-        if (currentUser.getCurrentUser().getMemberId() != id) {
-        	throw new UnauthorizedAccessException("You are not allowed to update your profile");
-        }
 
         existing.setName(updated.getName());
         existing.setEmail(updated.getEmail());
         existing.setPhone(updated.getPhone());
         existing.setAddress(updated.getAddress());
         existing.setUsername(updated.getUsername());
-        existing.setPassword(updated.getPassword());
         memberRepo.save(existing);
 
         return "Member profile updated.";
@@ -108,8 +109,10 @@ public class MemberServiceImpl implements MemberService {
         }
     	
     	existing.setPassword(hashPassword(plainText));
-    	return "";
+    	memberRepo.save(existing);
+    	return "Password Updated Successfully";
     }
+    
     @Transactional
     public String UpdateRole(Long id, Long adminId) {
         Member member = getMemberById(id);
@@ -145,6 +148,12 @@ public class MemberServiceImpl implements MemberService {
 
      
     public List<Member> getAllMembers() {
+    	if(currentUser.getCurrentUser() == null) {
+        	throw new UnauthorizedAccessException("Please Login");
+        }
+    	 if (currentUser.getCurrentUser().getRole() != Role.ADMIN) {
+             throw new UnauthorizedAccessException("You are not allowed to view other's details");
+         }
         return memberRepo.findAll();
     }
 
@@ -179,7 +188,7 @@ public class MemberServiceImpl implements MemberService {
         return "Membership activated until " + newExpiry + ".";
     }
 
-     
+     @Scheduled(cron = "0 00 00 * * ?")
     public void updateMembershipStatus(Member member) {
     	if(currentUser.getCurrentUser() == null) {
         	throw new UnauthorizedAccessException("Please Login");
@@ -192,7 +201,6 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-     
 
     public Member loginMember(LoginDetails loginDetails) {
         Member member = memberRepo.findByUsername(loginDetails.getUserName());

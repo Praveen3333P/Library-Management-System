@@ -44,8 +44,12 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBookById(id));
     }
 
+<<<<<<< Updated upstream
 
     @GetMapping("/search-title/{title}")
+=======
+    @GetMapping("/search_title/{title}")
+>>>>>>> Stashed changes
     public ResponseEntity<List<Book>> searchByTitle(@PathVariable String title) {
         return ResponseEntity.ok(bookService.searchByTitle(title));
     }
@@ -56,8 +60,12 @@ public class BookController {
         return ResponseEntity.ok(bookService.searchByGenre(genre));
     }
 
+<<<<<<< Updated upstream
 
     @GetMapping("/search-author/{author}")
+=======
+    @GetMapping("/search_author/{author}")
+>>>>>>> Stashed changes
     public ResponseEntity<List<Book>> searchByAuthor(@PathVariable String author) {
         return ResponseEntity.ok(bookService.searchByAuthor(author));
     }

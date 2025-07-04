@@ -1,6 +1,9 @@
 package com.cts.library.service;
 
 import com.cts.library.authentication.CurrentUser;
+import com.cts.library.exception.BookNotFoundException;
+import com.cts.library.exception.BorrowingLimitExceededException;
+import com.cts.library.exception.MemberNotFoundException;
 import com.cts.library.exception.UnauthorizedAccessException;
 import com.cts.library.model.Book;
 import com.cts.library.model.BorrowingTransaction;
@@ -16,93 +19,97 @@ import java.util.Optional;
 
 @Service
 public class BorrowingTransactionServiceImpl implements BorrowingTransactionService {
-    
-	private final BorrowingTransactionRepo transactionRepo;
-	private final BookRepo bookRepo;
-	private final MemberRepo memberRepo;
-	private final CurrentUser currentUser;
 
-	public BorrowingTransactionServiceImpl(BorrowingTransactionRepo transactionRepo, BookRepo bookRepo,
-			MemberRepo memberRepo, CurrentUser currentUser) {
-		this.transactionRepo = transactionRepo;
-		this.bookRepo = bookRepo;
-		this.memberRepo = memberRepo;
-		this.currentUser = currentUser;
-	}
+    private final BorrowingTransactionRepo transactionRepo;
+    private final BookRepo bookRepo;
+    private final MemberRepo memberRepo;
+    private final CurrentUser currentUser;
 
-	public String borrowBook(Long bookId, Long memberId) {
-		if (!validateCurrentUser(memberId)) {
-			return "Validation Error";
-		}
+    public BorrowingTransactionServiceImpl(BorrowingTransactionRepo transactionRepo,
+                                           BookRepo bookRepo,
+                                           MemberRepo memberRepo,
+                                           CurrentUser currentUser) {
+        this.transactionRepo = transactionRepo;
+        this.bookRepo = bookRepo;
+        this.memberRepo = memberRepo;
+        this.currentUser = currentUser;
+    }
 
-		Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
-		Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
+    public String borrowBook(Long bookId, Long memberId) {
+        validateCurrentUser(memberId);
 
+        Book book = bookRepo.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + bookId));
 
-		if (book.getAvailableCopies() <= 0) {
-			return "No copies available for borrowing.";
-		}
+        Member member = memberRepo.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with ID: " + memberId));
 
-		if (member.getBorrowingLimit() <= 0) {
-			return "Borrowing limit reached. Cannot borrow more books.";
-		}
+        if (book.getAvailableCopies() <= 0) {
+            return "No copies available for borrowing.";
+        }
 
-		BorrowingTransaction txn = new BorrowingTransaction();
-		txn.setBook(book);
-		txn.setMember(member);
-		txn.setBorrowDate(LocalDate.now());
-		txn.setReturnDate(LocalDate.now().plusDays(10));
-		txn.setStatus(BorrowingTransaction.Status.BORROWED);
-		System.out.println("txn"+txn);
-		transactionRepo.save(txn);
+        if (member.getBorrowingLimit() <= 0) {
+            throw new BorrowingLimitExceededException("Borrowing limit reached. Cannot borrow more books.");
+        }
 
-		book.setAvailableCopies(book.getAvailableCopies() - 1);
-		bookRepo.save(book);
+        BorrowingTransaction txn = new BorrowingTransaction();
+        txn.setBook(book);
+        txn.setMember(member);
+        txn.setBorrowDate(LocalDate.now());
+        txn.setReturnDate(LocalDate.now().plusDays(10));
+        txn.setStatus(BorrowingTransaction.Status.BORROWED);
 
-		member.setBorrowingLimit(member.getBorrowingLimit() - 1);
-		memberRepo.save(member);
+        transactionRepo.save(txn);
 
-		return "Book borrowed successfully.";
-	}
+        book.setAvailableCopies(book.getAvailableCopies() - 1);
+        bookRepo.save(book);
 
-	public String returnBook(Long bookId, Long memberId) {
-		validateCurrentUser(memberId);
+        member.setBorrowingLimit(member.getBorrowingLimit() - 1);
+        memberRepo.save(member);
 
-		Book book = bookRepo.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
+        return "Book borrowed successfully.";
+    }
 
-		Member member = memberRepo.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
+    public String returnBook(Long bookId, Long memberId) {
+        validateCurrentUser(memberId);
 
-		Optional<BorrowingTransaction> optTxn = transactionRepo.findByMember_MemberId(memberId).stream()
-				.filter(txn -> txn.getBook().equals(book) && txn.getStatus() == BorrowingTransaction.Status.BORROWED)
-				.findFirst();
+        Book book = bookRepo.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + bookId));
 
-		if (optTxn.isEmpty()) {
-			return "No borrowed transaction found.";
-		}
+        Member member = memberRepo.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with ID: " + memberId));
 
-		BorrowingTransaction txn = optTxn.get();
-		if (txn.getReturnDate() != null && txn.getReturnDate().isBefore(LocalDate.now())) {
-	        return "Return date exceeded. Please pay your pending fine before returning the book.";
-	    }
-		txn.setReturnDate(LocalDate.now());
-		txn.setStatus(BorrowingTransaction.Status.RETURNED);
-		transactionRepo.save(txn);
+        Optional<BorrowingTransaction> optTxn = transactionRepo.findByMember_MemberId(memberId).stream()
+                .filter(txn -> txn.getBook().equals(book) && txn.getStatus() == BorrowingTransaction.Status.BORROWED)
+                .findFirst();
 
-		book.setAvailableCopies(book.getAvailableCopies() + 1);
-		bookRepo.save(book);
+        if (optTxn.isEmpty()) {
+            return "No borrowed transaction found.";
+        }
 
-		member.setBorrowingLimit(member.getBorrowingLimit() + 1);
-		memberRepo.save(member);
+        BorrowingTransaction txn = optTxn.get();
+        if (txn.getReturnDate() != null && txn.getReturnDate().isBefore(LocalDate.now())) {
+            return "Return date exceeded. Please pay your pending fine before returning the book.";
+        }
 
-		return "Book returned successfully.";
-	}
+        txn.setReturnDate(LocalDate.now());
+        txn.setStatus(BorrowingTransaction.Status.RETURNED);
+        transactionRepo.save(txn);
 
-	private Boolean validateCurrentUser(Long memberId) {
-		Long currentUserId = currentUser.getCurrentUser().getMemberId();
-		if (!currentUserId.equals(memberId)) {
+        book.setAvailableCopies(book.getAvailableCopies() + 1);
+        bookRepo.save(book);
 
-			throw new UnauthorizedAccessException("You don't have rights to act on behalf of another member.");
-		}
-		return true;
-	}
+        member.setBorrowingLimit(member.getBorrowingLimit() + 1);
+        memberRepo.save(member);
+
+        return "Book returned successfully.";
+    }
+
+    private Boolean validateCurrentUser(Long memberId) {
+        Long currentUserId = currentUser.getCurrentUser().getMemberId();
+        if (!currentUserId.equals(memberId)) {
+            throw new UnauthorizedAccessException("You don't have rights to act on behalf of another member.");
+        }
+        return true;
+    }
 }

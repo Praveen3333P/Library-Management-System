@@ -46,7 +46,11 @@ public class Member {
 	@NotBlank(message = "UserName cannot be Blank")
 	@Size(min = 4, max = 20, message = "UserName must be between 4 to 20 characters")
 	private String username;
+<<<<<<< Updated upstream
 
+=======
+	
+>>>>>>> Stashed changes
 	@NotBlank(message = "Password cannot be Blank")
 	@Size(min = 8, message = "Password must be between 8 to 50 characters")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

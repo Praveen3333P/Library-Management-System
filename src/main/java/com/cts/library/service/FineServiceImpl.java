@@ -30,25 +30,6 @@ public class FineServiceImpl implements FineService {
         fineRepo.insertPendingFinesForOverdueTransactions();
         fineRepo.updatePendingFineAmountsDaily();
     }
-
-    @Override
-    public void payFine(Long fineId) {
-        Fine fine = fineRepo.findById(fineId)
-            .orElseThrow(() -> new RuntimeException("Fine not found with ID: " + fineId));
-
-        if ("PAID".equalsIgnoreCase(fine.getFineStatus())) {
-            throw new IllegalStateException("Fine is already paid.");
-        }
-
-<<<<<<< Updated upstream
-        fine.setFineStatus("PAID");
-        fineRepo.save(fine);
-=======
-	@Scheduled(cron = "0 16 17 * * ?") // Every day at 3:43 PM
-	public void processDailyFines() {
-		fineRepo.insertPendingFinesForOverdueTransactions();
-		fineRepo.updatePendingFineAmountsDaily();
-	}
 	
 	@Override
 	public void payFine(Long fineId) {
@@ -67,11 +48,4 @@ public class FineServiceImpl implements FineService {
 	    transaction.setReturnDate(LocalDate.now());
 	    borrowingTransactionRepo.save(transaction);
 	}
->>>>>>> Stashed changes
-
-        BorrowingTransaction transaction = fine.getTransaction();
-        transaction.setStatus(BorrowingTransaction.Status.RETURNED);
-        transaction.setReturnDate(LocalDate.now());
-        borrowingTransactionRepo.save(transaction);
-    }
 }

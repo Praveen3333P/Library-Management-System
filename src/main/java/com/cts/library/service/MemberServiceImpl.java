@@ -79,6 +79,10 @@ public class MemberServiceImpl implements MemberService {
             throw new UnauthorizedAccessException("Admin not allowed to update member details.");
         }
         
+        if(currentUser.getCurrentUser() == null) {
+        	throw new UnauthorizedAccessException("Please Login");
+        }
+        
         if (currentUser.getCurrentUser().getMemberId() != id) {
         	throw new UnauthorizedAccessException("You are not allowed to update your profile");
         }
@@ -96,6 +100,9 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public String updatePassword(Long id, String plainText) {
     	Member existing = getMemberById(id);
+    	if(currentUser.getCurrentUser() == null) {
+    		throw new UnauthorizedAccessException("Please Login");
+    	}
     	if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
             throw new UnauthorizedAccessException("Admin not allowed to update member details.");
         }
@@ -106,7 +113,9 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public String UpdateRole(Long id, Long adminId) {
         Member member = getMemberById(id);
-
+        if(currentUser.getCurrentUser() == null) {
+        	throw new UnauthorizedAccessException("Please Login");
+        }
         if (currentUser.getCurrentUser().getRole() != Role.ADMIN) {
             throw new UnauthorizedAccessException("Only admins can promote members.");
         }
@@ -120,7 +129,9 @@ public class MemberServiceImpl implements MemberService {
      @Transactional
     public String deleteMemberById(Long id) {
         Member member = getMemberById(id);
-
+        if(currentUser.getCurrentUser() == null) {
+        	throw new UnauthorizedAccessException("Please Login");
+        }
         if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
             throw new UnauthorizedAccessException("Only members can delete their own accounts.");
         }
@@ -139,7 +150,9 @@ public class MemberServiceImpl implements MemberService {
 
      
     public Member getMemberById(Long id) {
-    	
+    	if(currentUser.getCurrentUser() == null) {
+        	throw new UnauthorizedAccessException("Please Login");
+        }
     	 if (currentUser.getCurrentUser().getRole() != Role.ADMIN && currentUser.getCurrentUser().getMemberId() != id) {
              throw new UnauthorizedAccessException("You are not allowed to view other person profile");
          }
@@ -151,6 +164,9 @@ public class MemberServiceImpl implements MemberService {
      
     public String activateMembership(Long id, int months) {
         Member member = getMemberById(id);
+        if(currentUser.getCurrentUser() == null) {
+        	throw new UnauthorizedAccessException("Please Login");
+        }
         member.setMembershipStatus(MembershipStatus.PRIME);
 
         LocalDate newExpiry = (member.getMembershipExpiryDate() == null)
@@ -165,6 +181,9 @@ public class MemberServiceImpl implements MemberService {
 
      
     public void updateMembershipStatus(Member member) {
+    	if(currentUser.getCurrentUser() == null) {
+        	throw new UnauthorizedAccessException("Please Login");
+        }
         if (member.getMembershipExpiryDate() != null &&
             LocalDate.now().isAfter(member.getMembershipExpiryDate())) {
 

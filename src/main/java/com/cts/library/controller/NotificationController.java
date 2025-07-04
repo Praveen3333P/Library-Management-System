@@ -3,8 +3,6 @@ package com.cts.library.controller;
 import com.cts.library.model.Notification;
 import com.cts.library.service.NotificationService;
 import com.cts.library.service.NotificationServiceImpl;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,7 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @Autowired
+ 
     public NotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
     }

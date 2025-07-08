@@ -20,15 +20,6 @@ import java.util.List;
 @Repository
 public interface NotificationRepo extends JpaRepository<Notification, Long> {
 
-	List<Notification> findByMemberAndBookAndDateSentBetween(Member member, Book book, Date start, Date end);
-
-	List<Notification> findByDateSentAfter(Date date);
-
-	@Query("SELECT f FROM Fine f WHERE f.member = :member AND f.fineStatus = 'PENDING' ORDER BY f.transactionDate DESC")
-	Fine findLatestUnpaidFineByMember(@Param("member") Member member);
-
-	List<Notification> findByMemberAndFine(Member member, Fine fine);
-
 	@Modifying
 	@Transactional
 	@Query(value = """

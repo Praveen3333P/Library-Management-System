@@ -4,8 +4,8 @@ import com.cts.library.model.Notification;
 import com.cts.library.repository.NotificationRepo;
 import com.cts.library.service.NotificationServiceImpl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,16 +13,18 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
 
+    @Mock
     private NotificationRepo notificationRepo;
-    private NotificationServiceImpl service;
 
-    @BeforeEach
-    void setUp() {
-        notificationRepo = mock(NotificationRepo.class);
-        service = new NotificationServiceImpl(notificationRepo);
-    }
+    @InjectMocks
+    private NotificationServiceImpl service;
 
     @Test
     void testGetAllNotifications_ShouldReturnList() {

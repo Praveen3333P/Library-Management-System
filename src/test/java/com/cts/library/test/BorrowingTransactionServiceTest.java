@@ -5,37 +5,39 @@ import com.cts.library.exception.BookNotFoundException;
 import com.cts.library.model.Book;
 import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.model.Member;
-
 import com.cts.library.repository.BookRepo;
 import com.cts.library.repository.BorrowingTransactionRepo;
 import com.cts.library.repository.MemberRepo;
 import com.cts.library.service.BorrowingTransactionServiceImpl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class BorrowingTransactionServiceTest {
 
+    @Mock
     private BorrowingTransactionRepo transactionRepo;
+
+    @Mock
     private BookRepo bookRepo;
+
+    @Mock
     private MemberRepo memberRepo;
+
+    @Mock
     private CurrentUser currentUser;
+
+    @InjectMocks
     private BorrowingTransactionServiceImpl service;
-
-    @BeforeEach
-    void setUp() {
-        transactionRepo = mock(BorrowingTransactionRepo.class);
-        bookRepo = mock(BookRepo.class);
-        memberRepo = mock(MemberRepo.class);
-        currentUser = mock(CurrentUser.class);
-
-        service = new BorrowingTransactionServiceImpl(transactionRepo, bookRepo, memberRepo, currentUser);
-    }
 
     @Test
     void testBorrowBook_ValidBook_ShouldSucceed() {
@@ -65,7 +67,7 @@ public class BorrowingTransactionServiceTest {
 
     @Test
     void testBorrowBook_BookNotFound_ShouldThrowException() {
-        Long bookId = 99L;
+        Long bookId = 1L;
         Long memberId = 10L;
 
         Member member = new Member();
@@ -76,6 +78,6 @@ public class BorrowingTransactionServiceTest {
         when(currentUser.getCurrentUser()).thenReturn(member);
 
         assertThrows(BookNotFoundException.class, () -> service.borrowBook(bookId, memberId));
-        System.out.println("Exception thrown as expected.");
+        System.out.println("Exception thrown for missing book.");
     }
 }

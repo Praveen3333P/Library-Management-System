@@ -7,42 +7,41 @@ import com.cts.library.model.Role;
 import com.cts.library.repository.*;
 import com.cts.library.service.MemberServiceImpl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
 
+    @Mock
     private MemberRepo memberRepo;
+
+    @Mock
     private BorrowingTransactionRepo transactionRepo;
+
+    @Mock
     private FineRepo fineRepo;
+
+    @Mock
     private NotificationRepo notificationRepo;
+
+    @Mock
     private MemberTokenRepo memberTokenRepo;
+
+    @Mock
     private CurrentUser currentUser;
+
+    @InjectMocks
     private MemberServiceImpl memberService;
-
-    @BeforeEach
-    public void setup() {
-        memberRepo = mock(MemberRepo.class);
-        transactionRepo = mock(BorrowingTransactionRepo.class);
-        fineRepo = mock(FineRepo.class);
-        notificationRepo = mock(NotificationRepo.class);
-        memberTokenRepo = mock(MemberTokenRepo.class);
-        currentUser = mock(CurrentUser.class);
-
-        memberService = new MemberServiceImpl(
-                memberRepo,
-                transactionRepo,
-                fineRepo,
-                notificationRepo,
-                memberTokenRepo,
-                currentUser
-        );
-    }
 
     @Test
     public void testRegisterMember_ShouldSucceed() {
@@ -57,9 +56,6 @@ public class MemberServiceTest {
         assertEquals("Member registered successfully.", result);
         System.out.println("Member registered.");
     }
-    
-    
-    
 
     @Test
     public void testGetMemberById_Found() {

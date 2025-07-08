@@ -21,12 +21,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification createNotification(Notification notification) {
-        notification.setDateSent(new Date());
-        return notificationRepository.save(notification);
-    }
-
-    @Override
     public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();
     }
@@ -36,7 +30,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.findById(id).orElse(null);
     }
     
-	@Scheduled(cron = "30 53 10 * * *")
+	@Scheduled(cron = "00 00 09 * * *")
 	public void generateDueAndOverdueNotifications() {
 
 

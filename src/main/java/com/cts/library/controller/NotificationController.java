@@ -20,13 +20,8 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    @PostMapping
-    public ResponseEntity<Notification> createNotification(@RequestBody Notification notification) {
-        Notification created = notificationService.createNotification(notification);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
 
-    @GetMapping
+    @GetMapping("/get-all")
     public ResponseEntity<List<Notification>> getAllNotifications() {
         List<Notification> notifications = notificationService.getAllNotifications();
         return ResponseEntity.ok(notifications);
@@ -42,11 +37,7 @@ public class NotificationController {
         }
     }
 
-    @GetMapping("/trigger")
-    public ResponseEntity<String> triggerNotificationsManually() {
-        ((NotificationServiceImpl) notificationService).generateDueAndOverdueNotifications();
-        return ResponseEntity.ok("Notifications triggered successfully.");
-    }
+ 
 
 
 }

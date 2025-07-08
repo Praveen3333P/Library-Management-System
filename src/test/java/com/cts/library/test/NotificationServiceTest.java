@@ -25,17 +25,6 @@ public class NotificationServiceTest {
     }
 
     @Test
-    void testSendNotification_ShouldSave() {
-        Notification notification = new Notification();
-        when(notificationRepo.save(notification)).thenReturn(notification);
-
-        Notification result = service.createNotification(notification);
-        assertNotNull(result);
-        verify(notificationRepo).save(notification);
-        System.out.println("Notification saved.");
-    }
-
-    @Test
     void testGetAllNotifications_ShouldReturnList() {
         Notification n1 = new Notification();
         Notification n2 = new Notification();

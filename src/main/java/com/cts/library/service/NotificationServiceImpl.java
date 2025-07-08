@@ -36,7 +36,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.findById(id).orElse(null);
     }
     
-	@Scheduled(cron = "00 00 09 * * *")
+	@Scheduled(cron = "30 53 10 * * *")
 	public void generateDueAndOverdueNotifications() {
 
 

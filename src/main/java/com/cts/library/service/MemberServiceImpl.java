@@ -50,7 +50,7 @@ public class MemberServiceImpl implements MemberService {
         this .notificationRepo = notificationRepo;
     }
 
-     
+
     public String registerMember(Member member) {
         if (memberRepo.existsByUsername(member.getUsername())) {
             throw new RuntimeException("Username already taken.");
@@ -63,13 +63,18 @@ public class MemberServiceImpl implements MemberService {
         return "Member registered successfully.";
     }
 
-     
+    @Transactional
     public String createAdmin(Member newAdmin) {
+    	if (memberRepo.existsByUsername(newAdmin.getUsername())) {  
+            throw new RuntimeException("Username already taken.");
+        }
         newAdmin.setRole(Role.ADMIN);
         newAdmin.setPassword(hashPassword(newAdmin.getPassword()));
+        
         memberRepo.save(newAdmin);
-
+      
         return "Admin created successfully.";
+        
     }
 
      @Transactional
@@ -188,7 +193,7 @@ public class MemberServiceImpl implements MemberService {
         return "Membership activated until " + newExpiry + ".";
     }
 
-     @Scheduled(cron = "0 00 00 * * ?")
+    
     public void updateMembershipStatus(Member member) {
     	if(currentUser.getCurrentUser() == null) {
         	throw new UnauthorizedAccessException("Please Login");

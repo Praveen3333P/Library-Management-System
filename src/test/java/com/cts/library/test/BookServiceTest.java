@@ -8,24 +8,27 @@ import com.cts.library.model.Role;
 import com.cts.library.repository.BookRepo;
 import com.cts.library.service.BookServiceImpl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
 
+    @Mock
     private BookRepo bookRepo;
-    private CurrentUser currentUser;
-    private BookServiceImpl bookService;
 
-    @BeforeEach
-    public void setUp() {
-        bookRepo = mock(BookRepo.class);
-        currentUser = mock(CurrentUser.class);
-        bookService = new BookServiceImpl(bookRepo, currentUser);
-    }
+    @Mock
+    private CurrentUser currentUser;
+
+    @InjectMocks
+    private BookServiceImpl bookService;
 
     @Test
     public void testAddBook_AsAdmin_ShouldSucceed() {
@@ -41,11 +44,8 @@ public class BookServiceTest {
         assertEquals("Book has been added successfully.", result);
 
         System.out.println("Book added successfully by ADMIN.");
-    } 	
+    }
 
-
-    
-    
     @Test
     public void testAddBook_AsNonAdmin_ShouldThrowException() {
         Book book = new Book();

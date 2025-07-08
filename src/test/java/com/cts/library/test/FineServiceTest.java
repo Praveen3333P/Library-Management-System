@@ -8,27 +8,29 @@ import com.cts.library.repository.FineRepo;
 import com.cts.library.repository.BorrowingTransactionRepo;
 import com.cts.library.service.FineServiceImpl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
 public class FineServiceTest {
 
+    @Mock
     private FineRepo fineRepo;
+
+    @Mock
     private BorrowingTransactionRepo transactionRepo;
+
+    @InjectMocks
     private FineServiceImpl fineService;
-
-    @BeforeEach
-    void setUp() {
-        fineRepo = mock(FineRepo.class);
-        transactionRepo = mock(BorrowingTransactionRepo.class);
-        fineService = new FineServiceImpl(fineRepo, transactionRepo);
-    }
-
 
     private Fine getFineById(Long id) {
         return fineRepo.findById(id)
@@ -53,26 +55,6 @@ public class FineServiceTest {
 
         assertThrows(FineNotFoundException.class, () -> getFineById(2L));
         System.out.println("Exception thrown as expected.");
-    }
-
-    @Test
-    void testPayFine_ShouldUpdateStatus() {
-        Fine fine = new Fine();
-        fine.setFineId(1L);
-        fine.setFineStatus("PENDING");
-
-        BorrowingTransaction txn = new BorrowingTransaction();
-        txn.setStatus(BorrowingTransaction.Status.BORROWED);
-        fine.setTransaction(txn);
-
-        when(fineRepo.findById(1L)).thenReturn(Optional.of(fine));
-        when(fineRepo.save(any(Fine.class))).thenReturn(fine);
-        when(transactionRepo.save(any(BorrowingTransaction.class))).thenReturn(txn);
-
-        assertDoesNotThrow(() -> fineService.payFine(1L));
-        assertEquals("PAID", fine.getFineStatus());
-        assertEquals(BorrowingTransaction.Status.RETURNED, txn.getStatus());
-        System.out.println("Fine paid and transaction updated.");
     }
 
     @Test

@@ -1,20 +1,20 @@
 package com.cts.library.controller;
 
 import com.cts.library.service.BorrowingTransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/books")
 public class BorrowingTransactionController {
 
-    @Autowired
-    private BorrowingTransactionService transactionService;
+    private final BorrowingTransactionService transactionService;
+
+    public BorrowingTransactionController(BorrowingTransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     @PostMapping("/borrow/{memberId}/{bookId}")
     public String borrowBook(@PathVariable Long memberId, @PathVariable Long bookId) {
-
         return transactionService.borrowBook(bookId, memberId);
     }
 

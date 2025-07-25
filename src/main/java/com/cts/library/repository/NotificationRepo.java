@@ -19,6 +19,8 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepo extends JpaRepository<Notification, Long> {
+	
+	List<Notification> findByDateSentAfter(Date date);
 
 	@Modifying
 	@Transactional

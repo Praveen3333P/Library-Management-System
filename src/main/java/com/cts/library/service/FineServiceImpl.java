@@ -25,7 +25,7 @@ public class FineServiceImpl implements FineService {
     }
 
     @Override
-    @Scheduled(cron = "00 00 08 * * ?") 
+    @Scheduled(cron = "00 44 10 * * ?") 
     public void processDailyFines() {
         fineRepo.insertPendingFinesForOverdueTransactions();
         fineRepo.updatePendingFineAmountsDaily();

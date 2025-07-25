@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -35,13 +36,17 @@ public class MemberController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<Member> loginMember(@RequestBody LoginDetails loginDetails) {
-    	memberService.loginMember(loginDetails);
-        return ResponseEntity.ok(memberService.loginMember(loginDetails));
+    public ResponseEntity<HashMap<String, String>> loginMember(@RequestBody LoginDetails loginDetails) {
+
+    	HashMap<String, String> response = memberService.loginMember(loginDetails);
+        return ResponseEntity.ok(response); 
     }
+
+
 
     @PostMapping("/member/register")
     public ResponseEntity<String> registerMember(@RequestBody Member member) {
+    	System.out.println("yeah");
         return ResponseEntity.ok(memberService.registerMember(member));
     }
 

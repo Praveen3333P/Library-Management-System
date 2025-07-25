@@ -42,7 +42,7 @@ public class BorrowingTransactionServiceTest {
     @Test
     void testBorrowBook_ValidBook_ShouldSucceed() {
         Long bookId = 1L;
-        Long memberId = 10L;
+        Long memberId = 1L;
 
         Book book = new Book();
         book.setBookId(bookId);

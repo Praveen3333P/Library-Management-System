@@ -2,7 +2,9 @@ package com.cts.library.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -207,29 +209,42 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-    public Member loginMember(LoginDetails loginDetails) {
+    public HashMap<String, String> loginMember(LoginDetails loginDetails) {
+    	
         Member member = memberRepo.findByUsername(loginDetails.getUserName());
+        
         if (member == null) {
+        	
             throw new UnauthorizedAccessException("Member not found.");
         }
+        
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        
         if (!encoder.matches(loginDetails.getUserPassword(), member.getPassword())) {
-            throw new UnauthorizedAccessException("Invalid credentials.");
+        	
+            throw new UnauthorizedAccessException("Invalid credentials23.");
         }
 
         Optional<MemberToken> existingToken = memberTokenRepo.findByMember(member);
+        HashMap<String, String> response = new HashMap<>();
+        response.put("memberId", String.valueOf(member.getMemberId()));
+        
         if (existingToken.isPresent()) {
-            return member;
+        	response.put("token", existingToken.get().getMemberToken());
+            return response;
         }
 
         MemberToken memberToken = new MemberToken();
-        memberToken.setMemberToken(UUID.randomUUID().toString());
+        String randomToken=UUID.randomUUID().toString();
+        memberToken.setMemberToken(randomToken);
         memberToken.setGeneratedAt(LocalDateTime.now());
         memberToken.setMember(member);
         memberTokenRepo.save(memberToken);
 
-        return member;
+        response.put("token", randomToken);
+       
+        return response;
     }
 
 

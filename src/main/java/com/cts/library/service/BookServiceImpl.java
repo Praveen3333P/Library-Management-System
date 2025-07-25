@@ -66,6 +66,7 @@ public class BookServiceImpl implements BookService {
     }
 
     public List<Book> getAllBooks() {
+    	System.out.println("hek");
         return bookRepo.findAll();
     }
 

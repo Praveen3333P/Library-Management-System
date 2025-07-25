@@ -31,10 +31,21 @@ public class AuthenticationFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+    	
+    	String path = request.getServletPath();
+    	 if (path.startsWith("/login") ||
+    			 path.startsWith("/member/register") ||
+    			 path.startsWith("/books/get-books")
+    			 )
+    		       {
+    		        filterChain.doFilter(request, response);
+    		        return;
+    		    }
  
         String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
+        
+        if (token != null && token.startsWith("Basic ")) {
+            token = token.substring(6);
         }
  
         System.out.println("Token received: " + token);
@@ -46,6 +57,10 @@ public class AuthenticationFilter extends OncePerRequestFilter{
  
             currentUser.setCurrentUser(memberToken.getMember());
  
+        }else {
+           
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing Authorization token");
+            return;
         }
  
         filterChain.doFilter(request, response);
@@ -53,3 +68,6 @@ public class AuthenticationFilter extends OncePerRequestFilter{
     
 
 }
+
+
+

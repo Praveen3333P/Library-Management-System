@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Entity
-@Data
 public class Book {
 
 	@Id

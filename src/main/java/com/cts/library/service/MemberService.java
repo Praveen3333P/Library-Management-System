@@ -1,5 +1,6 @@
 package com.cts.library.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.cts.library.model.LoginDetails;
@@ -16,6 +17,6 @@ public interface MemberService {
 	public Member getMemberById(Long id);
 	public String activateMembership(Long memberId, int monthsToExtend);
 	public void updateMembershipStatus(Member member);
-	public Member loginMember(LoginDetails loginDetails);
+	public HashMap<String, String> loginMember(LoginDetails loginDetails);
 }
 	

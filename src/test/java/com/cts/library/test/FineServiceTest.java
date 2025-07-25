@@ -2,7 +2,6 @@ package com.cts.library.test;
 
 import com.cts.library.exception.FineNotFoundException;
 import com.cts.library.exception.FineAlreadyPaidException;
-import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.model.Fine;
 import com.cts.library.repository.FineRepo;
 import com.cts.library.repository.BorrowingTransactionRepo;

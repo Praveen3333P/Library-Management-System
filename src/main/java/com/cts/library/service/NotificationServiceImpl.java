@@ -8,7 +8,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -34,6 +33,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.findById(id).orElse(null);
     }
     
+
 	@Scheduled(cron = "00 45 10 * * *")
 	public void generateDueAndOverdueNotifications() {
 

@@ -243,6 +243,7 @@ public class MemberServiceImpl implements MemberService {
         Optional<MemberToken> existingToken = memberTokenRepo.findByMember(member);
         HashMap<String, String> response = new HashMap<>();
         response.put("memberId", String.valueOf(member.getMemberId()));
+        response.put("role", member.getRole().name());
         
         if (existingToken.isPresent()) {
         	response.put("token", existingToken.get().getMemberToken());

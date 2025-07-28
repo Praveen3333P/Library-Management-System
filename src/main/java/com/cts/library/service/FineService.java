@@ -10,5 +10,8 @@ public interface FineService {
 
 	void payFine(Long fineId);
 	List<Fine> getFinesByMemberId(Long memberId);
+	
+	List<Fine> getAllFines();
+
 
 }

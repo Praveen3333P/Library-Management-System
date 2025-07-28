@@ -16,5 +16,5 @@ public interface MemberRepo extends JpaRepository<Member, Long>{
 	boolean existsByUsername(String username);
 	@Query("SELECT m FROM Member m LEFT JOIN FETCH m.transactions LEFT JOIN FETCH m.fines")
 	List<Member> findAllWithTransactions();
-
+	
 }

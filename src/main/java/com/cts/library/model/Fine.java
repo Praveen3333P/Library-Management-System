@@ -3,6 +3,7 @@ package com.cts.library.model;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +42,13 @@ public class Fine {
             ? this.transaction.getBook().getBookId()
             : null;
     }
+    
+    
+    @JsonProperty("memberId")
+    public Long getMemberId() {
+        return member != null ? member.getMemberId() : null;
+    }
+
     
 
     public void setBookId(Long bookId) {

@@ -8,5 +8,6 @@ public interface BorrowingTransactionService {
     String borrowBook(Long bookId, Long memberId);
     String returnBook(Long bookId, Long memberId);
     public List<BorrowingTransaction> getTransactions(Long memberId);
+    public List<BorrowingTransaction> getAllTransactions();
 }
 

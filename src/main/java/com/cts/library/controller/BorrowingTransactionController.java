@@ -1,6 +1,10 @@
 package com.cts.library.controller;
 
+import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.service.BorrowingTransactionService;
+import com.cts.library.service.BorrowingTransactionServiceImpl;
+
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,4 +38,11 @@ public ResponseEntity<String> borrowBook(@PathVariable Long memberId, @PathVaria
     public String returnBook(@PathVariable Long bookId, @PathVariable Long memberId) {
         return transactionService.returnBook(bookId, memberId);
     }
+    
+    @GetMapping("/borrowing-transactions")
+    public ResponseEntity<List<BorrowingTransaction>> getAllTransactions() {
+        List<BorrowingTransaction> transactions = transactionService.getAllTransactions();
+        return ResponseEntity.ok(transactions);
+    }
+    
 }

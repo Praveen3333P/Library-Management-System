@@ -2,6 +2,7 @@ package com.cts.library.repository;
 
 import com.cts.library.model.BorrowingTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,5 +12,9 @@ public interface BorrowingTransactionRepo extends JpaRepository<BorrowingTransac
     List<BorrowingTransaction> findByMember_MemberId(Long memberId);
     void deleteByMember_MemberId(Long memberId);
     boolean existsByBook_BookIdAndStatus(Long bookId, BorrowingTransaction.Status status);
+    
+    @Query("SELECT bt FROM BorrowingTransaction bt")
+    List<BorrowingTransaction> findAllWithMemberAndBook();
+
 }
 

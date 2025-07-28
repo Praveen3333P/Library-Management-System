@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "notifications")
@@ -42,7 +43,14 @@ public class Notification {
         this.message = message;
         this.dateSent = dateSent;
     }
-	
+		
+    
+    @JsonProperty("memberId")
+    public Long getMemberId() {
+        return member != null ? member.getMemberId() : null;
+    }
+
+    
 	public Long getNotificationId() {
 		return notificationId;
 	}

@@ -49,5 +49,9 @@ public interface FineRepo extends JpaRepository<Fine, Long> {
     void deleteByMember_MemberId(Long memberId);
     
     List<Fine> findByMember_MemberId(Long memberId);
+    
+    
+    @Query("SELECT f FROM Fine f")
+    List<Fine> findAllFines();
 
 }

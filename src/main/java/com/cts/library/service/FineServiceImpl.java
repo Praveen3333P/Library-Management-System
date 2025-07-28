@@ -56,4 +56,10 @@ public class FineServiceImpl implements FineService {
 	    transaction.setReturnDate(LocalDate.now());
 	    borrowingTransactionRepo.save(transaction);
 	}
+	
+	@Override
+	public List<Fine> getAllFines() {
+	    return fineRepo.findAllFines();
+	}
+
 }

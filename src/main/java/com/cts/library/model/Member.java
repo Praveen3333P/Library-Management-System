@@ -77,6 +77,12 @@ public class Member {
 	{
 		return transactions;
 	}
+	
+	List<BorrowingTransaction> getAllTransactions()
+	{
+		return transactions;
+	}
+	
 
 	public void setTransactions(List<BorrowingTransaction> transactions) {
 		this.transactions = transactions;

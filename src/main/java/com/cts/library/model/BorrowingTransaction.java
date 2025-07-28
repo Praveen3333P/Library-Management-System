@@ -2,8 +2,10 @@ package com.cts.library.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 public class BorrowingTransaction {
@@ -30,6 +32,7 @@ public class BorrowingTransaction {
 	public enum Status {
 		BORROWED, RETURNED
 	}
+	
 
 	// Constructors
 	public BorrowingTransaction() {
@@ -43,7 +46,18 @@ public class BorrowingTransaction {
 		this.status = status;
 	}
 
-	// Getters and Setters
+	// Getters and Setters\
+
+	
+	  @JsonProperty("memberId")
+	    public Long getMemberId() {
+	        return member != null ? member.getMemberId() : null;
+	    }
+	  
+	   @JsonProperty("memberName")  
+	    public String getMemberName() {
+	        return member != null ? member.getName() : null;  
+	    }
 
 	public Long getTransactionId() {
 		return transactionId;

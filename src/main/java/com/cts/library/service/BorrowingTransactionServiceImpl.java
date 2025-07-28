@@ -124,5 +124,14 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 
         return transactionRepo.findByMember_MemberId(memberId);
     }
+    
+    
+    
+    @Override
+    public List<BorrowingTransaction> getAllTransactions() {
+        return transactionRepo.findAllWithMemberAndBook();
+    }
+
+
 
 }

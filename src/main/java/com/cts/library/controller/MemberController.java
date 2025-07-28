@@ -105,11 +105,6 @@ public class MemberController {
         return ResponseEntity.ok(memberService.activateMembership(id, months));
     }
     
-    
-    
-    
-    
-    
     @GetMapping("/member/transactions/{id}")
     public ResponseEntity<List<BorrowingTransaction>> getMemberTransactions(@PathVariable Long id) {
         List<BorrowingTransaction> transactions = borrowingTransactionServiceImpl.getTransactions(id);

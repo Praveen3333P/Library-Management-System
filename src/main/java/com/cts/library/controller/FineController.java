@@ -37,5 +37,13 @@ public class FineController {
         List<Fine> fines = fineService.getFinesByMemberId(memberId);
         return ResponseEntity.ok(fines);
     }
+    
+    
+    @GetMapping("/all-fines")
+    public ResponseEntity<List<Fine>> getAllFines() {
+        List<Fine> fines = fineService.getAllFines();
+        return ResponseEntity.ok(fines);
+    }
+
 
 }

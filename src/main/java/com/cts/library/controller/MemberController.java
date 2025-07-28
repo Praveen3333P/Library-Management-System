@@ -1,7 +1,9 @@
 package com.cts.library.controller;
 
+import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.model.LoginDetails;
 import com.cts.library.model.Member;
+import com.cts.library.service.BorrowingTransactionServiceImpl;
 import com.cts.library.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -10,14 +12,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 
+
 @RestController
 @Validated
 public class MemberController {
 
     private final MemberService memberService;
+	private final BorrowingTransactionServiceImpl borrowingTransactionServiceImpl;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService,BorrowingTransactionServiceImpl borrowingTransactionServiceImpl) {
         this.memberService = memberService;
+        this.borrowingTransactionServiceImpl = borrowingTransactionServiceImpl;
     }
 
     @PostMapping("/admin/admin-register")
@@ -79,4 +84,17 @@ public class MemberController {
                                                      @RequestParam int months) {
         return ResponseEntity.ok(memberService.activateMembership(id, months));
     }
+    
+    
+    
+    
+    
+    
+    @GetMapping("/member/transactions/{id}")
+    public ResponseEntity<List<BorrowingTransaction>> getMemberTransactions(@PathVariable Long id) {
+        List<BorrowingTransaction> transactions = borrowingTransactionServiceImpl.getTransactions(id);
+        return ResponseEntity.ok(transactions);
+    }
+
+
 }

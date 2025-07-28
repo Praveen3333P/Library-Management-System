@@ -73,7 +73,8 @@ public class Member {
 	@JsonManagedReference
 	private List<Notification> notifications;
 
-	public List<BorrowingTransaction> getTransactions() {
+	List<BorrowingTransaction> getTransactions(Long memberId)
+	{
 		return transactions;
 	}
 

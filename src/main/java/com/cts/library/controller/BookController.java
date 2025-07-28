@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+
 @RestController
 @Validated
 @RequestMapping("/books")
@@ -19,17 +21,17 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/admin/add")
     public ResponseEntity<String> addBook(@RequestBody Book book) {
         return ResponseEntity.ok(bookService.addBook(book));
     }
 
-    @DeleteMapping("/delete-by-id/{id}")
+    @DeleteMapping("/admin/delete-by-id/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.deleteBook(id));
     }
 
-    @PutMapping("/update-book/{id}")
+    @PutMapping("/admin/update-book/{id}")
     public ResponseEntity<String> updateBook(@PathVariable Long id, @RequestBody Book book) {
         return ResponseEntity.ok(bookService.updateBook(id, book));
     }

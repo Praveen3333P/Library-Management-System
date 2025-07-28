@@ -19,6 +19,8 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepo extends JpaRepository<Notification, Long> {
+	
+	List<Notification> findByDateSentAfter(Date date);
 
 	@Modifying
 	@Transactional
@@ -101,7 +103,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
 			        'Overdue: "', b.book_name, '" is ',
 			        DATEDIFF(CURRENT_DATE, bt.return_date),
 			        ' day(s) overdue. Fine ₹', f.amount,
-			        ' (Fine ID: ', f.fine_id, ').'
+			        ').'
 			    ),
 			    n.fine_id = f.fine_id,
 			    n.date_sent = CURRENT_DATE
@@ -131,4 +133,9 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
 	int upgradeOverdueToReturned();
 
 	void deleteByMember_MemberId(long memberId);
+
+	@Query("SELECT n FROM Notification n WHERE n.member.id = :memberId")
+	List<Notification> findByMemberId(@Param("memberId") Long memberId);
+
+
 }

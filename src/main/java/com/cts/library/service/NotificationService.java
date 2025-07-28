@@ -6,6 +6,6 @@ import java.util.List;
 public interface NotificationService {
     
     public List<Notification> getAllNotifications();
-    public Notification getNotificationById(Long id);
+    List<Notification> getNotificationsByMemberId(Long memberId);
     public void generateDueAndOverdueNotifications(); 
 }

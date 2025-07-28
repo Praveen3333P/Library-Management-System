@@ -4,12 +4,14 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 
 @Entity
 public class Fine {
@@ -30,8 +32,23 @@ public class Fine {
     private double amount;
     private String fineStatus;
     private LocalDate transactionDate;
+    
+    @Column
+    private Long bookId;
 
-    public Fine() {
+    public Long getBookId() {
+        return this.transaction != null && this.transaction.getBook() != null
+            ? this.transaction.getBook().getBookId()
+            : null;
+    }
+    
+
+    public void setBookId(Long bookId) {
+		this.bookId = bookId;
+	}
+
+
+	public Fine() {
     }
 
     public Fine(Long fineId, Member member, double amount, String fineStatus, LocalDate transactionDate) {

@@ -2,6 +2,7 @@ package com.cts.library.service;
 
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,14 @@ public class FineServiceImpl implements FineService {
     }
 
     @Override
-    @Scheduled(cron = "00 58 18 * * ?") 
+    public List<Fine> getFinesByMemberId(Long memberId) {
+        return fineRepo.findByMember_MemberId(memberId);
+    }
+
+    
+    
+    @Override
+    @Scheduled(cron = "00 50 16 * * ?") 
     public void processDailyFines() {
         fineRepo.insertPendingFinesForOverdueTransactions();
         fineRepo.updatePendingFineAmountsDaily();

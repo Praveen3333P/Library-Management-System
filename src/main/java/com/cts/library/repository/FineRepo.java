@@ -1,5 +1,7 @@
 package com.cts.library.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,13 +14,14 @@ public interface FineRepo extends JpaRepository<Fine, Long> {
     @Modifying
     @Transactional
     @Query(value = """
-        INSERT INTO fine (amount, fine_status, member_id, transaction_id, transaction_date)
+        INSERT INTO fine (amount, fine_status, member_id, transaction_id, transaction_date,book_id)
         SELECT 
             DATEDIFF(CURRENT_DATE, bt.return_date) * 20.0 AS amount,
             'PENDING' AS fine_status,
             bt.member_id,
             bt.transaction_id,
-            CURRENT_DATE AS transaction_date
+            CURRENT_DATE AS transaction_date,
+            bt.book_id
         FROM borrowing_transaction bt
         WHERE bt.status = 'BORROWED'
           AND bt.return_date < CURRENT_DATE
@@ -44,4 +47,7 @@ public interface FineRepo extends JpaRepository<Fine, Long> {
     int updatePendingFineAmountsDaily();
 
     void deleteByMember_MemberId(Long memberId);
+    
+    List<Fine> findByMember_MemberId(Long memberId);
+
 }

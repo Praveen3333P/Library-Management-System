@@ -15,6 +15,7 @@ import com.cts.library.repository.MemberRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -112,4 +113,16 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
         }
         return true;
     }
+    
+    
+    
+    @Override
+    public List<BorrowingTransaction> getTransactions(Long memberId) {
+        validateCurrentUser(memberId);         
+        memberRepo.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with ID: " + memberId));
+
+        return transactionRepo.findByMember_MemberId(memberId);
+    }
+
 }

@@ -29,15 +29,14 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification getNotificationById(Long id) {
-        return notificationRepository.findById(id).orElse(null);
+    public List<Notification> getNotificationsByMemberId(Long memberId) {
+        return notificationRepository.findByMemberId(memberId);
     }
-    
 
-	@Scheduled(cron = "00 45 10 * * *")
+
+	@Scheduled(cron = "30 43 16 * * *")
+	
 	public void generateDueAndOverdueNotifications() {
-
-
 		int insertRemainder = notificationRepository.insertDueReminders();
 		int updateRemainder = notificationRepository.updateDueReminderMessages();
 		int updatetoReturnToday = notificationRepository.updateReminderToDueTodayMessage();

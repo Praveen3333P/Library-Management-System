@@ -34,15 +34,17 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Notification> getNotification(@PathVariable Long id) {
-        Notification notification = notificationService.getNotificationById(id);
-        if (notification != null) {
-            return ResponseEntity.ok(notification);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); 
+    @GetMapping("/{memberId}")
+    public ResponseEntity<?> getNotificationsByMemberId(@PathVariable Long memberId) {
+        try {
+            List<Notification> notifications = notificationService.getNotificationsByMemberId(memberId);
+            return ResponseEntity.ok(notifications);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching notifications");
         }
     }
+
   
  
 

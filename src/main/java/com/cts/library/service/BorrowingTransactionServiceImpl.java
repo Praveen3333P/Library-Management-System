@@ -125,13 +125,16 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
         return transactionRepo.findByMember_MemberId(memberId);
     }
     
-    
-    
     @Override
     public List<BorrowingTransaction> getAllTransactions() {
         return transactionRepo.findAllWithMemberAndBook();
     }
+    public List<Book> getAllBorrowedBooks(Long memberId){
+        validateCurrentUser(memberId);
+        memberRepo.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with ID: " + memberId));
 
-
+        return transactionRepo.findBooksByBorrowedTransactions(memberId);
+    }
 
 }

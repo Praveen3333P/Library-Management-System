@@ -11,7 +11,7 @@ public interface MemberService {
 	public String createAdmin(Member adminMember);
 	public String registerMember(Member member);
 	public String updateMember(Long id, Member member);
-	public String updatePassword(Long id, String plainText);
+	public String updatePassword(Long id, String currentPassword, String newPassword);
 	public String deleteMemberById(Long id);
 	public List<Member> getAllMembers();
 	public Member getMemberById(Long id);

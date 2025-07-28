@@ -1,16 +1,21 @@
 package com.cts.library.controller;
 
+import com.cts.library.exception.UnauthorizedAccessException;
 import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.model.LoginDetails;
 import com.cts.library.model.Member;
 import com.cts.library.service.BorrowingTransactionServiceImpl;
 import com.cts.library.service.MemberService;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -64,14 +69,29 @@ public class MemberController {
 
     @PutMapping("/member/{id}/update")
     public ResponseEntity<String> updateMember(@PathVariable Long id,@RequestBody Member member) {
-
-        return ResponseEntity.ok(memberService.updateMember(id, member));
+    	 String result = memberService.updateMember(id, member);
+    	 return ResponseEntity
+    		        .ok()
+    		        .header("Content-Type", "application/json")
+    		        .body("\"" + result + "\"");
     }
+    
     @PutMapping("/member/{id}/update-password")
-    public ResponseEntity<String> updateMemberPassword(@PathVariable Long id,
-    		@RequestBody String plainText) {
-    	return ResponseEntity.ok(memberService.updatePassword(id, plainText));
+    public ResponseEntity<Map<String, String>> updateMemberPassword(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> passwordMap) {
+
+        String currentPassword = passwordMap.get("currentPassword");
+        String newPassword = passwordMap.get("newPassword");
+
+        // Call the service method and handle logic as needed
+        memberService.updatePassword(id, currentPassword, newPassword);
+
+        return ResponseEntity.ok(Collections.singletonMap("message", "Password updated successfully"));
     }
+
+
+
 
     @DeleteMapping("/member/{id}/delete")
 

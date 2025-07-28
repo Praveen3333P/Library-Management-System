@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -100,25 +101,38 @@ public class MemberServiceImpl implements MemberService {
         existing.setEmail(updated.getEmail());
         existing.setPhone(updated.getPhone());
         existing.setAddress(updated.getAddress());
-        existing.setUsername(updated.getUsername());
         memberRepo.save(existing);
 
         return "Member profile updated.";
     }
-    @Transactional
-    public String updatePassword(Long id, String plainText) {
-    	Member existing = getMemberById(id);
-    	if(currentUser.getCurrentUser() == null) {
-    		throw new UnauthorizedAccessException("Please Login");
-    	}
-    	if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
-            throw new UnauthorizedAccessException("Admin not allowed to update member details.");
-        }
-    	
-    	existing.setPassword(hashPassword(plainText));
-    	memberRepo.save(existing);
-    	return "Password Updated Successfully";
+     @Transactional
+     public String updatePassword(Long id, String currentPassword, String newPassword) {
+         Member existing = getMemberById(id);
+         
+
+         if (currentUser.getCurrentUser() == null) {
+             throw new UnauthorizedAccessException("Please login.");
+         }
+
+         if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
+             throw new UnauthorizedAccessException("Admins cannot update member details.");
+         }
+         
+         if (!verifyPassword(currentPassword, existing.getPassword())) {
+             throw new IllegalArgumentException("Current password is incorrect.");
+         }
+         System.out.println(existing.getMemberId());
+         existing.setPassword(hashPassword(newPassword));
+         memberRepo.save(existing);
+
+         return "Password updated successfully";
+     }
+
+    
+    private boolean verifyPassword(String rawPassword, String hashedPassword) {
+        return BCrypt.checkpw(rawPassword, hashedPassword); 
     }
+
     
     @Transactional
     public String UpdateRole(Long id, Long adminId) {

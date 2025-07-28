@@ -20,7 +20,7 @@ public class Scheduler {
         this.memberTokenRepo = memberTokenRepo;
     }
  
-    @Scheduled(fixedRate = 60 * 60 * 1000)
+    @Scheduled(fixedRate = 60 * 60 * 1000*24)
     @Transactional
     public void clearExpiredTokens() {
         LocalDateTime expiry = LocalDateTime.now().minusMinutes(60);

@@ -58,7 +58,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
         txn.setMember(member);
         txn.setBorrowDate(LocalDate.now());
         txn.setReturnDate(LocalDate.now().plusDays(10));
-        txn.setStatus(BorrowingTransaction.Status.BORROWED);
+        txn.setStatus(BorrowingTransaction.Status.PENDING);
 
         transactionRepo.save(txn);
 
@@ -81,7 +81,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with ID: " + memberId));
 
         Optional<BorrowingTransaction> optTxn = transactionRepo.findByMember_MemberId(memberId).stream()
-                .filter(txn -> txn.getBook().equals(book) && txn.getStatus() == BorrowingTransaction.Status.BORROWED)
+                .filter(txn -> txn.getBook().equals(book) && txn.getStatus() == BorrowingTransaction.Status.BORROWED || txn.getStatus() == BorrowingTransaction.Status.RETURN_REJECTED)
                 .findFirst();
 
         if (optTxn.isEmpty()) {
@@ -94,7 +94,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
         }
 
         txn.setReturnDate(LocalDate.now());
-        txn.setStatus(BorrowingTransaction.Status.RETURNED);
+        txn.setStatus(BorrowingTransaction.Status.RETURN_PENDING);
         transactionRepo.save(txn);
 
         book.setAvailableCopies(book.getAvailableCopies() + 1);

@@ -27,10 +27,11 @@ public class BorrowingTransaction {
 	private LocalDate returnDate;
 
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private Status status;
 
 	public enum Status {
-		BORROWED, RETURNED
+		BORROW_REJECTED,PENDING,BORROWED,RETURN_PENDING, RETURNED,RETURN_REJECTED
 	}
 	
 

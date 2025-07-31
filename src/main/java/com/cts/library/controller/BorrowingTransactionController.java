@@ -25,13 +25,9 @@ public class BorrowingTransactionController {
 
 	@PostMapping("/borrow/{memberId}/{bookId}")
 	public ResponseEntity<String> borrowBook(@PathVariable Long memberId, @PathVariable Long bookId) {
-	    String result = transactionService.borrowBook(bookId, memberId);
-	
-	    if (result.equals("Book borrowed successfully!")) {
-	        return ResponseEntity.ok(result); 
-	    } else {
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
-	    }
+	    String result = transactionService.borrowBook(bookId, memberId); 
+	    return ResponseEntity.ok(result); 
+	    
 	}
 
     @PostMapping("/return/{memberId}/{bookId}")

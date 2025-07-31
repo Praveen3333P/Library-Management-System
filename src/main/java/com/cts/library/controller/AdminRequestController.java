@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cts.library.model.AdminRequests;
-import com.cts.library.model.Admin_Requests;
 import com.cts.library.model.BorrowingTransaction;
-import com.cts.library.repository.AdminRequestRepo;
-import com.cts.library.repository.AdminRequestRepository;
 import com.cts.library.repository.AdminRequestsRepo;
 import com.cts.library.repository.BorrowingTransactionRepo;
 

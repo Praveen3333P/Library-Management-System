@@ -7,7 +7,7 @@ import org.hibernate.annotations.Immutable;
 @Entity
 @Immutable  // Marks this entity as read-only
 @Table(name = "admin_requests_view")
-public class Admin_Requests {
+public class AdminRequests {
 
     @Id
     @Column(name = "request_id")
@@ -27,12 +27,15 @@ public class Admin_Requests {
 
     @Enumerated(EnumType.STRING)
     private BorrowingTransaction.Status status;
+    
+   
+	
 
     // Constructor
-    public Admin_Requests() {
+    public AdminRequests() {
     }
 
-    public Admin_Requests(Long requestId, Long memberId, String memberName, Long bookId, String bookName, Status status) {
+    public AdminRequests(Long requestId, Long memberId, String memberName, Long bookId, String bookName, Status status) {
         this.requestId = requestId;
         this.memberId = memberId;
         this.memberName = memberName;

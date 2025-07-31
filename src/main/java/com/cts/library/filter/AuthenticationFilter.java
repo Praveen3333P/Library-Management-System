@@ -35,7 +35,8 @@ public class AuthenticationFilter extends OncePerRequestFilter{
     	String path = request.getServletPath();
     	 if (path.startsWith("/login") ||
     			 path.startsWith("/member/register") ||
-    			 path.startsWith("/books/get-books")
+    			 path.startsWith("/books/get-books") ||
+    			 path.startsWith("/admin/admin-register") 
     			 )
     		       {
     		        filterChain.doFilter(request, response);

@@ -3,6 +3,7 @@ package com.cts.library.service;
 import com.cts.library.model.Notification;
 import com.cts.library.repository.NotificationRepo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,7 +15,8 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepo notificationRepository;
-
+    
+    @Autowired
     private final JavaMailSender mailSender;
 
     public NotificationServiceImpl(NotificationRepo notificationRepository,
@@ -34,8 +36,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
 
-	@Scheduled(cron = "00 49 11 * * *")
-	
+
+	@Scheduled(cron = "30 12 12 * * *")
 	public void generateDueAndOverdueNotifications() {
 		int insertRemainder = notificationRepository.insertDueReminders();
 		int updateRemainder = notificationRepository.updateDueReminderMessages();
@@ -58,13 +60,10 @@ public class NotificationServiceImpl implements NotificationService {
 
 		 for (Notification notification : todayNotifications) {
 			    String toEmail = (notification.getMember() != null) ? notification.getMember().getEmail() : "null";
-			    System.out.println("Preparing to send to member ID: " + notification.getMember().getMemberId() + ", email: " + toEmail);
-			
-
-		        
-		        
-		        
-		        String fullMessage = notification.getMessage();
+			    System.out.println("Preparing1 to send to member ID: " + notification.getMember().getMemberId() + ", email: " + toEmail);
+                
+			    String fullMessage = notification.getMessage();
+			    
 		        String subject;
 		        if (fullMessage.startsWith("Urgent Reminder:")) {
 		            subject = "Urgent Reminder:";
@@ -78,13 +77,27 @@ public class NotificationServiceImpl implements NotificationService {
 		            subject = "Library Notification";
 		        }
 
-
+		        
 		        SimpleMailMessage sms = new SimpleMailMessage();
+		        System.out.println("yeah1");
+		     
 		        sms.setTo(toEmail);
 		        sms.setSubject(subject);
 		        sms.setText(fullMessage);
-		        mailSender.send(sms);
+		    
+		        try {
+		            mailSender.send(sms);
+		            System.out.println("Email sent to: " + toEmail);
+		        } catch (Exception e) {
+		            System.out.println("Error sending email: " + e.getMessage());
+		            e.printStackTrace();
+		        }
+
+		       
 		        
+		       
+
+		       
 		    }
 		
 		

@@ -38,7 +38,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
 			    CURRENT_DATE
 			FROM borrowing_transaction bt
 			JOIN book b ON bt.book_id = b.book_id
-			WHERE bt.status = 'BORROWED'
+		WHERE bt.status IN ('BORROWED', 'RETURN_PENDING', 'RETURN_REJECTED')
 			  AND DATEDIFF(bt.return_date, CURRENT_DATE) <= 3
 			  AND NOT EXISTS (
 			      SELECT 1 FROM notifications n
@@ -62,8 +62,8 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
 			              ' day(s). Please return on time.'
 			          ),
 			          n.date_sent = CURRENT_DATE
-			      WHERE
-			bt.status = 'BORROWED'
+			      
+			WHERE bt.status IN ('BORROWED', 'RETURN_PENDING', 'RETURN_REJECTED')
 			AND DATEDIFF(bt.return_date, CURRENT_DATE) BETWEEN 0 AND 3
 			AND n.fine_id IS NULL
 
@@ -83,7 +83,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
 	            'Urgent Reminder: "', b.book_name, '" is due today. Please return it before the library closes!'
 	        ),
 	        n.date_sent = CURRENT_DATE
-	    WHERE bt.status = 'BORROWED'
+	    WHERE bt.status IN ('BORROWED', 'RETURN_PENDING', 'RETURN_REJECTED')
 	      AND DATE(bt.return_date) = CURRENT_DATE
 	      AND n.fine_id IS NULL
 	    """, nativeQuery = true)
@@ -107,7 +107,8 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
 			    ),
 			    n.fine_id = f.fine_id,
 			    n.date_sent = CURRENT_DATE
-			WHERE bt.status = 'BORROWED'
+			WHERE bt.status IN ('BORROWED', 'RETURN_PENDING', 'RETURN_REJECTED')
+
 			  AND bt.return_date < CURRENT_DATE
 			  AND LOWER(f.fine_status) = 'pending'
 			""", nativeQuery = true)

@@ -32,6 +32,7 @@ public class FineServiceImpl implements FineService {
 
     
     
+
    
     @Scheduled(cron = "00 12 12 * * ?") 
     public void processDailyFines() {

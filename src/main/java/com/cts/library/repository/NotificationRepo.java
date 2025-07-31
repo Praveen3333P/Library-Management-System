@@ -103,7 +103,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
 			        'Overdue: "', b.book_name, '" is ',
 			        DATEDIFF(CURRENT_DATE, bt.return_date),
 			        ' day(s) overdue. Fine ₹', f.amount,
-			        ').'
+			        '.'
 			    ),
 			    n.fine_id = f.fine_id,
 			    n.date_sent = CURRENT_DATE

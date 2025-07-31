@@ -64,7 +64,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 
         
 
-        return "Book borrowed pending for approval";
+        return "Book borrow pending for approval";
     }
 
     public String returnBook(Long bookId, Long memberId) {

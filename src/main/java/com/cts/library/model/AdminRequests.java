@@ -11,8 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "admin_requests_view")
-public class Admin_Requests {
+@Table(name = "admin_requests")
+public class AdminRequests {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,10 +27,10 @@ public class Admin_Requests {
     @Enumerated(EnumType.STRING)
     private BorrowingTransaction.Status status;
     
-    public Admin_Requests() {
+    public AdminRequests() {
     }
 
-	public Admin_Requests(Long requestId, Long memberId, String memberName, Long bookId, String bookName,
+	public AdminRequests(Long requestId, Long memberId, String memberName, Long bookId, String bookName,
 			Status status) {
 		super();
 		this.requestId = requestId;

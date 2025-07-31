@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cts.library.model.AdminRequests;
 import com.cts.library.model.Admin_Requests;
 import com.cts.library.model.BorrowingTransaction;
+import com.cts.library.repository.AdminRequestRepo;
 import com.cts.library.repository.AdminRequestRepository;
+import com.cts.library.repository.AdminRequestsRepo;
 import com.cts.library.repository.BorrowingTransactionRepo;
 
 @RestController
@@ -25,11 +28,11 @@ public class AdminRequestController {
     private BorrowingTransactionRepo borrowingTransactionRepo;
 
     @Autowired
-    private AdminRequestRepository adminRequestsRepo;
+    private AdminRequestsRepo adminRequestsRepo;
 
     @GetMapping("/requests")
-    public ResponseEntity<List<Admin_Requests>> getAllTransactions() {
-        List<Admin_Requests> requests = adminRequestsRepo.findAllAdminRequests(); // Query the Admin_Requests view
+    public ResponseEntity<List<AdminRequests>> getAllTransactions() {
+        List<AdminRequests> requests = adminRequestsRepo.findAll(); // Query the Admin_Requests view
         return ResponseEntity.ok(requests);  // Return all requests
     }
 

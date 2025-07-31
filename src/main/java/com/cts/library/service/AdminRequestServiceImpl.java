@@ -4,16 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cts.library.exception.BookNotFoundException;
 import com.cts.library.exception.MemberNotFoundException;
-import com.cts.library.model.Admin_Requests;
+import com.cts.library.model.AdminRequests;
 import com.cts.library.model.Book;
 import com.cts.library.model.BorrowingTransaction;
 import com.cts.library.model.Member;
-import com.cts.library.repository.AdminRequestRepository;
+import com.cts.library.repository.AdminRequestsRepo;
 import com.cts.library.repository.BookRepo;
 import com.cts.library.repository.BorrowingTransactionRepo;
 import com.cts.library.repository.MemberRepo;
@@ -25,7 +24,7 @@ public class AdminRequestServiceImpl implements AdminRequestService {
     private final BorrowingTransactionRepo borrowingTransactionRepo;
 
     
-    private final AdminRequestRepository adminRequestsRepo;
+    private final AdminRequestsRepo adminRequestsRepo;
     
     
     private final BookRepo bookRepo;
@@ -35,7 +34,7 @@ public class AdminRequestServiceImpl implements AdminRequestService {
    
 
     public AdminRequestServiceImpl(BorrowingTransactionRepo borrowingTransactionRepo,
-			AdminRequestRepository adminRequestsRepo, BookRepo bookRepo, MemberRepo memberRepo) {
+			AdminRequestsRepo adminRequestsRepo, BookRepo bookRepo, MemberRepo memberRepo) {
 		super();
 		this.borrowingTransactionRepo = borrowingTransactionRepo;
 		this.adminRequestsRepo = adminRequestsRepo;
@@ -44,8 +43,8 @@ public class AdminRequestServiceImpl implements AdminRequestService {
 	}
 
 	@Override
-    public List<Admin_Requests> getAllRequests() {
-        return adminRequestsRepo.findAllAdminRequests();
+    public List<AdminRequests> getAllRequests() {
+        return adminRequestsRepo.findAll();
     }
 
     @Override

@@ -26,7 +26,7 @@ public class FineController {
     @PostMapping("/pay/{fineId}")
     public ResponseEntity<Map<String, String>> payFine(@PathVariable Long fineId) {
         fineService.payFine(fineId);
-        Map<String, String> response = new HashMap();
+        Map<String, String> response = new HashMap<>();
         response.put("message", "Fine paid successfully.");
         return ResponseEntity.ok(response);
     }

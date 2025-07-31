@@ -97,31 +97,11 @@
 //
 //}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.cts.library.controller;
 
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -129,53 +109,56 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cts.library.model.Admin_Requests;
+import com.cts.library.model.AdminRequests;
+import com.cts.library.repository.AdminRequestsRepo;
 import com.cts.library.service.AdminRequestService;
 
 @RestController
 @RequestMapping("/admin")
 public class AdminRequestController {
 
-    @Autowired
-    private AdminRequestService adminRequestService;
+	private final AdminRequestsRepo adminRequestsRepo;
+	private final AdminRequestService adminRequestService;
 
-    @GetMapping("/requests")
-    public ResponseEntity<List<Admin_Requests>> getAllTransactions() {
-        List<Admin_Requests> requests = adminRequestService.getAllRequests();
-        return ResponseEntity.ok(requests);
-    }
 
-    @PostMapping(value = "/accept/{transactionId}/{memberId}/{bookId}", produces = "application/json")
-    public ResponseEntity<Map<String, String>> acceptRequest(
-        @PathVariable Long transactionId,
-        @PathVariable Long memberId,
-        @PathVariable Long bookId) {
+	public AdminRequestController(AdminRequestsRepo adminRequestsRepo, AdminRequestService adminRequestService) {
+	        this.adminRequestsRepo = adminRequestsRepo;
+	        this.adminRequestService = adminRequestService;
+	    }
 
-        Map<String, String> response = adminRequestService.acceptRequest(transactionId, memberId, bookId);
+	@GetMapping("/requests")
+	public ResponseEntity<List<AdminRequests>> getAllTransactions() {
+		List<AdminRequests> requests = adminRequestsRepo.findAll(); // Query the Admin_Requests view
+		return ResponseEntity.ok(requests);
+	} // Return all requests
 
-        if (response.get("message").contains("not found")) {
-            return ResponseEntity.status(404).body(response);
-        } else if (response.get("message").startsWith("Invalid")) {
-            return ResponseEntity.badRequest().body(response);
-        }
+	@PostMapping(value = "/accept/{transactionId}/{memberId}/{bookId}", produces = "application/json")
+	public ResponseEntity<Map<String, String>> acceptRequest(@PathVariable Long transactionId,
+			@PathVariable Long memberId, @PathVariable Long bookId) {
 
-        return ResponseEntity.ok(response);
-    }
+		Map<String, String> response = adminRequestService.acceptRequest(transactionId, memberId, bookId);
 
-    @PostMapping(value = "/reject/{transactionId}/{memberId}/{bookId}", produces = "application/json")
-    public ResponseEntity<Map<String, String>> rejectRequest(
-        @PathVariable Long transactionId,
-        @PathVariable Long memberId,
-        @PathVariable Long bookId) {
+		if (response.get("message").contains("not found")) {
+			return ResponseEntity.status(404).body(response);
+		} else if (response.get("message").startsWith("Invalid")) {
+			return ResponseEntity.badRequest().body(response);
+		}
 
-        Map<String, String> response = adminRequestService.rejectRequest(transactionId, memberId, bookId);
+		return ResponseEntity.ok(response);
+	}
 
-        if (response.get("message").contains("not found")) {
-            return ResponseEntity.status(404).body(response);
-        } else if (response.get("message").startsWith("Invalid")) {
-            return ResponseEntity.badRequest().body(response);
-        }
+	@PostMapping(value = "/reject/{transactionId}/{memberId}/{bookId}", produces = "application/json")
+	public ResponseEntity<Map<String, String>> rejectRequest(@PathVariable Long transactionId,
+			@PathVariable Long memberId, @PathVariable Long bookId) {
 
-        return ResponseEntity.ok(response);
-    }
+		Map<String, String> response = adminRequestService.rejectRequest(transactionId, memberId, bookId);
+
+		if (response.get("message").contains("not found")) {
+			return ResponseEntity.status(404).body(response);
+		} else if (response.get("message").startsWith("Invalid")) {
+			return ResponseEntity.badRequest().body(response);
+		}
+
+		return ResponseEntity.ok(response);
+	}
 }

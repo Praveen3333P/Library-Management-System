@@ -36,8 +36,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
 
+
 	@Scheduled(cron = "30 12 12 * * *")
-	
 	public void generateDueAndOverdueNotifications() {
 		int insertRemainder = notificationRepository.insertDueReminders();
 		int updateRemainder = notificationRepository.updateDueReminderMessages();

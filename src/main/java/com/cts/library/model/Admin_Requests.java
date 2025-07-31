@@ -1,101 +1,74 @@
 package com.cts.library.model;
 
 import com.cts.library.model.BorrowingTransaction.Status;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.hibernate.annotations.Immutable;
 
 @Entity
+@Immutable  // Marks this entity as read-only
 @Table(name = "admin_requests_view")
 public class Admin_Requests {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "request_id")
     private Long requestId;
 
+    @Column(name = "member_id")
     private Long memberId;
+
+    @Column(name = "member_name")
     private String memberName;
 
+    @Column(name = "book_id")
     private Long bookId;
+
+    @Column(name = "book_name")
     private String bookName;
 
     @Enumerated(EnumType.STRING)
     private BorrowingTransaction.Status status;
-    
+
+    // Constructor
     public Admin_Requests() {
     }
 
-	public Admin_Requests(Long requestId, Long memberId, String memberName, Long bookId, String bookName,
-			Status status) {
-		super();
-		this.requestId = requestId;
-		this.memberId = memberId;
-		this.memberName = memberName;
-		this.bookId = bookId;
-		this.bookName = bookName;
-		this.status = status;
-	}
+    public Admin_Requests(Long requestId, Long memberId, String memberName, Long bookId, String bookName, Status status) {
+        this.requestId = requestId;
+        this.memberId = memberId;
+        this.memberName = memberName;
+        this.bookId = bookId;
+        this.bookName = bookName;
+        this.status = status;
+    }
 
-	public Long getRequestId() {
-		return requestId;
-	}
+    // Getters only (no setters for read-only safety)
+    public Long getRequestId() {
+        return requestId;
+    }
 
-	public void setRequestId(Long requestId) {
-		this.requestId = requestId;
-	}
+    public Long getMemberId() {
+        return memberId;
+    }
 
-	public Long getMemberId() {
-		return memberId;
-	}
+    public String getMemberName() {
+        return memberName;
+    }
 
-	public void setMemberId(Long memberId) {
-		this.memberId = memberId;
-	}
+    public Long getBookId() {
+        return bookId;
+    }
 
-	public String getMemberName() {
-		return memberName;
-	}
+    public String getBookName() {
+        return bookName;
+    }
 
-	public void setMemberName(String memberName) {
-		this.memberName = memberName;
-	}
+    public BorrowingTransaction.Status getStatus() {
+        return status;
+    }
 
-	public Long getBookId() {
-		return bookId;
-	}
-
-	public void setBookId(Long bookId) {
-		this.bookId = bookId;
-	}
-
-	public String getBookName() {
-		return bookName;
-	}
-
-	public void setBookName(String bookName) {
-		this.bookName = bookName;
-	}
-
-	public BorrowingTransaction.Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(BorrowingTransaction.Status status) {
-		this.status = status;
-	}
-
-	@Override
-	public String toString() {
-		return "Admin_Requests [requestId=" + requestId + ", memberId=" + memberId + ", memberName=" + memberName
-				+ ", bookId=" + bookId + ", bookName=" + bookName + ", status=" + status + "]";
-	}
-
-  
-    
-    
+    @Override
+    public String toString() {
+        return "Admin_Requests [requestId=" + requestId + ", memberId=" + memberId + ", memberName=" + memberName
+                + ", bookId=" + bookId + ", bookName=" + bookName + ", status=" + status + "]";
+    }
 }

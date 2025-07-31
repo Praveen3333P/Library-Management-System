@@ -23,7 +23,7 @@ public interface FineRepo extends JpaRepository<Fine, Long> {
             CURRENT_DATE AS transaction_date,
             bt.book_id
         FROM borrowing_transaction bt
-        WHERE bt.status = 'BORROWED'
+        WHERE bt.status IN ('BORROWED', 'RETURN_PENDING', 'RETURN_REJECTED')
           AND bt.return_date < CURRENT_DATE
           AND NOT EXISTS (
               SELECT 1 FROM fine f
@@ -40,8 +40,8 @@ public interface FineRepo extends JpaRepository<Fine, Long> {
         JOIN borrowing_transaction bt ON f.transaction_id = bt.transaction_id
         SET f.amount = f.amount + 20,
             f.transaction_date = CURRENT_DATE
-        WHERE f.fine_status = 'PENDING'
-          AND bt.status = 'BORROWED'
+        WHERE  bt.status IN ('BORROWED', 'RETURN_PENDING', 'RETURN_REJECTED')
+    		AND f.fine_status = 'PENDING'  
           AND CURRENT_DATE != f.transaction_date
         """, nativeQuery = true)
     int updatePendingFineAmountsDaily();

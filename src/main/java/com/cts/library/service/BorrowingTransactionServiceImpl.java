@@ -62,13 +62,9 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 
         transactionRepo.save(txn);
 
-        book.setAvailableCopies(book.getAvailableCopies() - 1);
-        bookRepo.save(book);
+        
 
-        member.setBorrowingLimit(member.getBorrowingLimit() - 1);
-        memberRepo.save(member);
-
-        return "Book borrowed successfully.";
+        return "Book borrowed pending for approval";
     }
 
     public String returnBook(Long bookId, Long memberId) {
@@ -97,11 +93,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
         txn.setStatus(BorrowingTransaction.Status.RETURN_PENDING);
         transactionRepo.save(txn);
 
-        book.setAvailableCopies(book.getAvailableCopies() + 1);
-        bookRepo.save(book);
-
-        member.setBorrowingLimit(member.getBorrowingLimit() + 1);
-        memberRepo.save(member);
+        
 
         return "Book returned successfully.";
     }

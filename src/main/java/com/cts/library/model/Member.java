@@ -1,5 +1,6 @@
 package com.cts.library.model;
 
+import java.beans.Transient;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -165,10 +166,10 @@ public class Member {
 		this.address = address;
 	}
 
+
+	
 	public MembershipStatus getMembershipStatus() {
-		if (membershipExpiryDate == null || LocalDate.now().isAfter(membershipExpiryDate)) {
-			return MembershipStatus.EXPIRED;
-		}
+		
 		return membershipStatus;
 	}
 

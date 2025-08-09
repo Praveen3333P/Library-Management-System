@@ -1,5 +1,6 @@
 package com.cts.library.service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,10 @@ public class AdminRequestServiceImpl implements AdminRequestService {
     public List<AdminRequests> getAllRequests() {
         return adminRequestsRepo.findAll();
     }
+	
+	private String responseMessage;
 
+	
     @Override
     public Map<String, String> acceptRequest(Long transactionId, Long memberId, Long bookId) {
         BorrowingTransaction transaction = borrowingTransactionRepo.findByTransactionId(transactionId);
@@ -58,29 +62,44 @@ public class AdminRequestServiceImpl implements AdminRequestService {
         }
         Member member = memberRepo.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with ID: " + memberId));
-        
         Book book = bookRepo.findById(bookId)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + bookId));
+   
 
         switch (transaction.getStatus()) {
             case PENDING:
-                transaction.setStatus(BorrowingTransaction.Status.BORROWED);
-                borrowingTransactionRepo.save(transaction);
-                book.setAvailableCopies(book.getAvailableCopies() - 1);
-                bookRepo.save(book);
-                member.setBorrowingLimit(member.getBorrowingLimit() - 1);
-                memberRepo.save(member);
-                response.put("message", "Request accepted: status changed from PENDING → BORROWED");
-                return response;
+                if(book.getAvailableCopies() > 0)
+                {
+                	transaction.setStatus(BorrowingTransaction.Status.BORROWED);
+                    borrowingTransactionRepo.save(transaction);
+                    book.setAvailableCopies(book.getAvailableCopies() - 1);
+                    bookRepo.save(book);
+                    member.setBorrowingLimit(member.getBorrowingLimit() - 1);
+                    memberRepo.save(member);
+                    responseMessage="Request accepted: status changed from PENDING → BORROWED";
+                    response.put("message",responseMessage);
+                    return response;
+                }
+                else {
+                	transaction.setStatus(BorrowingTransaction.Status.BORROW_REJECTED);
+                	 borrowingTransactionRepo.save(transaction);
+                	responseMessage="Sorry, there is no available books.";
+                	response.put("message",responseMessage);
+                	return response;	
+                }
             case RETURN_PENDING:
-                transaction.setStatus(BorrowingTransaction.Status.RETURNED);
-                borrowingTransactionRepo.save(transaction);
-                book.setAvailableCopies(book.getAvailableCopies() + 1);
-                bookRepo.save(book);
-                member.setBorrowingLimit(member.getBorrowingLimit() + 1);
-                memberRepo.save(member);
-                response.put("message", "Request accepted: status changed from RETURN_PENDING → RETURNED");
-                return response;
+            	
+            		transaction.setReturnDate(LocalDate.now());
+                    transaction.setStatus(BorrowingTransaction.Status.RETURNED);
+                    borrowingTransactionRepo.save(transaction);
+                    book.setAvailableCopies(book.getAvailableCopies() + 1);
+                    bookRepo.save(book);
+                    member.setBorrowingLimit(member.getBorrowingLimit() + 1);
+                    memberRepo.save(member);
+                    responseMessage="Request accepted: status changed from RETURN_PENDING → RETURNED";
+                    response.put("message", responseMessage);
+                    return response;
+            	
             default:
                 response.put("message", "Invalid status for accept action: " + transaction.getStatus());
                 return response;
@@ -90,6 +109,10 @@ public class AdminRequestServiceImpl implements AdminRequestService {
     @Override
     public Map<String, String> rejectRequest(Long transactionId, Long memberId, Long bookId) {
         BorrowingTransaction transaction = borrowingTransactionRepo.findByTransactionId(transactionId);
+        
+        
+        Book book = bookRepo.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found with ID: " + bookId));
         Map<String, String> response = new HashMap<>();
 
         if (transaction == null) {
@@ -98,11 +121,22 @@ public class AdminRequestServiceImpl implements AdminRequestService {
         }
 
         switch (transaction.getStatus()) {
+       
             case PENDING:
+            	 if(book.getAvailableCopies() > 0)
+             	{
                 transaction.setStatus(BorrowingTransaction.Status.BORROW_REJECTED);
                 borrowingTransactionRepo.save(transaction);
                 response.put("message", "Request rejected: status changed from PENDING → BORROW_REJECTED");
                 return response;
+    	}
+    	else {
+    		 transaction.setStatus(BorrowingTransaction.Status.BORROW_REJECTED);
+    		 borrowingTransactionRepo.save(transaction);
+    		 responseMessage="Sorry, there is no available books.";
+             response.put("message", responseMessage);
+             return response;
+    	}
             case RETURN_PENDING:
                 transaction.setStatus(BorrowingTransaction.Status.RETURN_REJECTED);
                 borrowingTransactionRepo.save(transaction);

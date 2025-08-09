@@ -58,11 +58,11 @@ public class BorrowingTransactionServiceTest {
 
         String result = service.borrowBook(bookId, memberId);
 
-        assertEquals("Book borrowed successfully.", result);
-        assertEquals(0, book.getAvailableCopies());
-        assertEquals(1, member.getBorrowingLimit());
+        assertEquals("Book borrow pending for approval", result);
+        assertEquals(1, book.getAvailableCopies());
+        assertEquals(2, member.getBorrowingLimit());
         verify(transactionRepo, times(1)).save(any(BorrowingTransaction.class));
-        System.out.println("Borrowing successful.");
+        System.out.println("Book borrow pending for approval.");
     }
 
     @Test

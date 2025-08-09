@@ -150,22 +150,34 @@ public class MemberServiceImpl implements MemberService {
         return "Congrats, you have been promoted to ADMIN.";
     }
 
-     @Transactional
+    @Transactional
     public String deleteMemberById(Long id) {
         Member member = getMemberById(id);
-        if(currentUser.getCurrentUser() == null) {
-        	throw new UnauthorizedAccessException("Please Login");
+
+        if (currentUser.getCurrentUser() == null) {
+            throw new UnauthorizedAccessException("Please Login");
         }
+
         if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
             throw new UnauthorizedAccessException("Only members can delete their own accounts.");
         }
-        transactionRepo.deleteByMember_MemberId(id);
-        fineRepo.deleteByMember_MemberId(id);
-        notificationRepo.deleteByMember_MemberId(id);
-        memberTokenRepo.deleteByMember_MemberId(id);
-        memberRepo.delete(member);
-        return "Member deleted successfully.";
+
+        String responseMessage="";
+        boolean hasTransactions = transactionRepo.existsByMember_MemberId(id);
+        if (hasTransactions) {
+        	responseMessage="Cannot delete account: You have existing borrowing transactions.";
+        }
+        else {
+        	
+        	memberTokenRepo.deleteByMember_MemberId(id);
+            notificationRepo.deleteByMember_MemberId(id);
+            fineRepo.deleteByMember_MemberId(id);
+            memberRepo.delete(member);
+            responseMessage="Member deleted successfully.";
+        }
+        return responseMessage;
     }
+
 
      
     public List<Member> getAllMembers() {

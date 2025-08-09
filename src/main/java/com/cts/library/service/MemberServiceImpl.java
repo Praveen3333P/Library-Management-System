@@ -61,8 +61,8 @@ public class MemberServiceImpl implements MemberService {
 
         member.setRole(Role.MEMBER);
         member.setPassword(hashPassword(member.getPassword()));
+        member.setMembershipStatus(MembershipStatus.BASIC);
         memberRepo.save(member);
-
         return "Member registered successfully.";
     }
 
@@ -150,22 +150,34 @@ public class MemberServiceImpl implements MemberService {
         return "Congrats, you have been promoted to ADMIN.";
     }
 
-     @Transactional
+    @Transactional
     public String deleteMemberById(Long id) {
         Member member = getMemberById(id);
-        if(currentUser.getCurrentUser() == null) {
-        	throw new UnauthorizedAccessException("Please Login");
+
+        if (currentUser.getCurrentUser() == null) {
+            throw new UnauthorizedAccessException("Please Login");
         }
+
         if (currentUser.getCurrentUser().getRole() != Role.MEMBER) {
             throw new UnauthorizedAccessException("Only members can delete their own accounts.");
         }
-        transactionRepo.deleteByMember_MemberId(id);
-        fineRepo.deleteByMember_MemberId(id);
-        notificationRepo.deleteByMember_MemberId(id);
-        memberTokenRepo.deleteByMember_MemberId(id);
-        memberRepo.delete(member);
-        return "Member deleted successfully.";
+
+        String responseMessage="";
+        boolean hasTransactions = transactionRepo.existsByMember_MemberId(id);
+        if (hasTransactions) {
+        	responseMessage="Cannot delete account: You have existing borrowing transactions.";
+        }
+        else {
+        	
+        	memberTokenRepo.deleteByMember_MemberId(id);
+            notificationRepo.deleteByMember_MemberId(id);
+            fineRepo.deleteByMember_MemberId(id);
+            memberRepo.delete(member);
+            responseMessage="Member deleted successfully.";
+        }
+        return responseMessage;
     }
+
 
      
     public List<Member> getAllMembers() {
@@ -204,9 +216,9 @@ public class MemberServiceImpl implements MemberService {
                 : member.getMembershipExpiryDate().plusMonths(months);
 
         member.setMembershipExpiryDate(newExpiry);
+        member.setBorrowingLimit(member.getBorrowingLimit()+10);
         memberRepo.save(member);
-
-        return "Membership activated until " + newExpiry + ".";
+        return "Membership activated to Prime until " + newExpiry + ".";
     }
 
     
@@ -265,5 +277,25 @@ public class MemberServiceImpl implements MemberService {
 
     private String hashPassword(String plainText) {
         return new BCryptPasswordEncoder().encode(plainText);
+    }
+    
+    @Scheduled(cron = "0 0 0 * * *") 
+    public void checkMembershipExpiry() {
+        List<Member> allMembers = memberRepo.findAll();
+        LocalDate today = LocalDate.now();
+
+        for (Member member : allMembers) {
+            if (member.getMembershipStatus() == MembershipStatus.PRIME &&
+                member.getMembershipExpiryDate() != null &&
+                today.isAfter(member.getMembershipExpiryDate())) {
+
+                member.setMembershipStatus(MembershipStatus.BASIC);
+                member.setMembershipExpiryDate(null);
+                member.setBorrowingLimit(member.getBorrowingLimit() - 10); 
+                memberRepo.save(member);
+
+                System.out.println("Membership expired for member ID: " + member.getMemberId());
+            }
+        }
     }
 }

@@ -89,7 +89,7 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
             return "Return date exceeded. Please pay your pending fine before returning the book.";
         }
 
-        txn.setReturnDate(LocalDate.now());
+        
         txn.setStatus(BorrowingTransaction.Status.RETURN_PENDING);
         transactionRepo.save(txn);
 

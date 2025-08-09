@@ -27,6 +27,8 @@ public interface BorrowingTransactionRepo extends JpaRepository<BorrowingTransac
     @Query("SELECT bt FROM BorrowingTransaction bt WHERE bt.book.bookId = :bookId AND bt.member.memberId = :memberId")
     BorrowingTransaction findByBookIdAndMemberId(@Param("bookId") Long bookId, @Param("memberId") Long memberId);
 
+    boolean existsByMember_MemberId(Long memberId);
+
 
 
     @Query("SELECT b FROM BorrowingTransaction b WHERE b.transactionId = :transactionId")
